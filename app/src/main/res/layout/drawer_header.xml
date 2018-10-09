@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimary"
+    android:layout_height="wrap_content">
+
+
+
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/image_profileD"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/sadok"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"
+            android:layout_gravity="center"
+
+            />
+
+
+        <TextView
+            android:id="@+id/username_profileD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mohamed Ali"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Medium" />
+
+        <View
+            android:layout_gravity="center"
+            android:layout_width="160dp"
+            android:layout_height="1dp"
+            android:background="@color/colorLight" />
+
+        <TextView
+            android:id="@+id/email_profileD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MohamedAli@gmail.com"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Small" />
+    </LinearLayout>
+
+</RelativeLayout>

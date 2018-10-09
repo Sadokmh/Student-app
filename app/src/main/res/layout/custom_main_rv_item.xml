@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp">
+
+    <TextView
+        android:id="@+id/numSeance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1ère Séance : "
+        android:textSize="15dp"
+        />
+
+
+        <TextView
+            android:id="@+id/sTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="8h - 9h30"/>
+
+
+
+    </LinearLayout>
+
+
+
+
+    <TextView
+        android:id="@+id/matiere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="35dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Principe de Gestion"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/coursLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_subtitles_black_24dp"/>
+
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cours"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="3dp"
+            android:textColor="@color/colorAccent"
+            />
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/profLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="right">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_perm_identity_black_24dp"
+            android:layout_marginRight="3dp"/>
+
+
+        <TextView
+            android:id="@+id/enseignant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hanen Bedoui"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/colorAccent"
+            />
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/salleLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp">
+
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_location_accent"/>
+
+
+        <TextView
+            android:id="@+id/salle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp"
+            android:text="Amphi B"
+            android:textColor="@color/colorAccent"/>
+
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/parQuinzaineLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_restore"/>
+
+
+        <TextView
+            android:id="@+id/parQuinziane"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Par quinzaine"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp"/>
+
+
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/colorHighlight"
+        android:layout_marginTop="10dp"/>
+
+
+
+
+
+
+
+
+</LinearLayout>

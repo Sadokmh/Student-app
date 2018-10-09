@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true"
+        >
+
+
+        <include android:id="@+id/app_bar"
+            layout="@layout/app_bar"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="#FCE4EC"
+            >
+
+
+            <ImageView
+                android:id="@+id/prec"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="start"
+                android:src="@drawable/ic_precedent" />
+
+            <TextView
+                android:id="@+id/jourAffiche"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:text="Samedi"
+                android:textSize="25dp"
+                android:textColor="@color/colorAccent"
+                android:layout_marginTop="5dp"/>
+
+            <ImageView
+                android:id="@+id/suiv"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+
+                android:layout_alignParentTop="true"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_suivant" />
+
+
+        </RelativeLayout>
+
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mainRV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+    <fragment
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="com.example.sadokmm.etudiant.Fragments.NavigationDrawerFragment"
+
+        android:id="@+id/fragment_navigation_drawer"
+        tools:layout="@layout/fragment_naivgation_drawer"/>
+
+
+
+
+
+
+
+</android.support.v4.widget.DrawerLayout>
