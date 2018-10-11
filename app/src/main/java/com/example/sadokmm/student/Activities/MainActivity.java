@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.R;
 import com.google.gson.Gson;
+//import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.sadokmm.student.Fragments.LoginFragment.admin;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -60,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
     public static Seance seanceActuelle,seanceVide,weekend;
     public static Emploi monEmploi;
 
-    public static final String MY_SP_FILE = "com.example.sadokmm.etudiant.activities.emploi";
+    public static final String MY_SP_FILE = "com.example.sadokmm.student.activities.monemploi";
 
 
     private TextView afficheJournee;
+
+    private ImageView mmm;
 
 
     final static String LUNDI = "lundi/monday/lun./mon.";
@@ -74,11 +79,17 @@ public class MainActivity extends AppCompatActivity {
     final static String SAMEDI = "samedi/saturday/sam./sat.";
     final static String DIMANCHE = "dimanche/sunday/dim./sun.";
 
+    private AQuery aq ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        aq = new AQuery(this);
+
+        mmm=(ImageView)findViewById(R.id.mmmm);
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -95,102 +106,14 @@ public class MainActivity extends AppCompatActivity {
         weekend = new Seance("Bon Weekend " , "","","",0,false);
         seanceVide = new Seance("Pas de cours pour l'instant","","","",0,false);
         seanceActuelle = seanceVide;
+        getJourNum();
 
         if (isNetworkAvailable()) {
 
 
-
-
-        /*Info info=new Info("LFSI",3,2);
-        info.getEmploi().add(new Groupe("G2"));
-        info.getEmploi().get(0).getJourListe().add(new Jour("Lundi"));
-        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Principe de Gestion","Hanen Bedoui","Amphi B","cours",1,false));
-        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Microeconomie","Hanen Bedoui","GS5","cours",2,false));
-        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("ASD","Hanen Bedoui","Amphi A","cours",3,false));
-        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Prog C","Hanen Bedoui","D14","TD",4,false));
-        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Maths","Hanen Bedoui","A21","TD",5,false));
-
-
-        info.getEmploi().get(0).getJourListe().add(new Jour("Mardi"));
-        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Maths MARDI" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Prog C MARDI" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Compilation MARDI" , "Souad Ghorbel","c14","TP",4,false));
-        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Techniques Multimédia MARDI" , "Neila Hochlef","c14","TP",5,false));
-        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Sécurite informatique MARDI" , "Yamen Mkadem","c14","cours",6,true));
-
-        info.getEmploi().get(0).getJourListe().add(new Jour("Mercredi"));
-        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Maths MERCREDI" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Prog C MERCREDI" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Compilation MERCREDI" , "Souad Ghorbel","c14","TP",4,false));
-        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Techniques Multimédia MERCREDI" , "Neila Hochlef","c14","TP",5,false));
-        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Sécurite informatique MERCREDI" , "Yamen Mkadem","c14","cours",6,true));
-
-        info.getEmploi().get(0).getJourListe().add(new Jour("Jeudi"));
-        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Maths JEUDI" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Prog C JEUDI" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Compilation JEUDI" , "Souad Ghorbel","c14","TP",4,false));
-        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Techniques Multimédia JEUDI" , "Neila Hochlef","c14","TP",5,false));
-        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Sécurite informatique JEUDI" , "Yamen Mkadem","c14","cours",6,true));
-
-        info.getEmploi().get(0).getJourListe().add(new Jour("Vendredi"));
-        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Maths VENDREDI" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Prog C VENDREDI" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Compilation VENDREDI" , "Souad Ghorbel","c14","TP",4,false));
-        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Techniques Multimédia VENDREDI" , "Neila Hochlef","c14","TP",5,false));
-        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Sécurite informatique VENDREDI" , "Yamen Mkadem","c14","cours",6,true));
-
-        info.getEmploi().get(0).getJourListe().add(new Jour("Samedi"));
-        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Maths SAMEDI" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Prog C SAMEDI" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Compilation SAMEDI" , "Souad Ghorbel","c14","TP",4,false));
-        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Techniques Multimédia SAMEDI" , "Neila Hochlef","c14","TP",5,false));
-        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Sécurite informatique SAMEDI" , "Yamen Mkadem","c14","cours",6,true));
-
-
-
-
-
-
-        info.getEmploi().add(new Groupe("G1"));
-        info.getEmploi().get(1).getJourListe().add(new Jour("lun"));
-        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("PPPG1","Hanen Bedoui","Amphi B","cours",1,false));
-        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("Eco G1","Hanen Bedoui","GS5","cours",2,false));
-        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("ASD G1","Hanen Bedoui","Amphi A","cours",3,false));
-        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("G1 Prog C","Hanen Bedoui","D14","TD",4,false));
-        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("G1 Maths","Hanen Bedoui","A21","TD",5,false));
-
-
-        info.getEmploi().get(1).getJourListe().add(new Jour("mar"));
-        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Maths" , "Majdi Agroubi","E6","Cours",1,true));
-        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Prog C" , "Tarek Berhouma","C14","TD",3,false));
-        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Techniques Multimédia" , "Neila Hochlef","c14","TP",4,false));
-
-
-        myList.add(info);
-
-
-        getJourNum();
-
-
-        String grp = "G2";
-        String fil = "LFSI";
-
-        for (int i = 0; i < myList.size(); i++) {
-            if (myList.get(i).getFiliere().equals(fil)) {
-                maFiliere = myList.get(i);
-            }
-        }
-
-        for (int i = 0; i < maFiliere.getEmploi().size(); i++) {
-            if (maFiliere.getEmploi().get(i).getNom().equals(grp)) {
-                monGroupe = maFiliere.getEmploi().get(i);
-            }
-        }*/
-
             Toast.makeText(this,"Connecté ! ",Toast.LENGTH_SHORT).show();
+
             chargerMonEmploi();
-
-
 
         }
 
@@ -198,13 +121,21 @@ public class MainActivity extends AppCompatActivity {
 
             Toast.makeText(this,"non connecté !",Toast.LENGTH_SHORT).show();
 
-            SharedPreferences prefs=getSharedPreferences(MY_SP_FILE,MODE_PRIVATE);
-            String monemploi=prefs.getString("monemploi","a");
 
-            Gson gson = new Gson();
+            SharedPreferences sp=getSharedPreferences("monemploi",MODE_PRIVATE);
+            String monemploi = sp.getString("emploi","a");
 
-            monEmploi = gson.fromJson(monemploi,Emploi.class);
+            if (monemploi.equals("a")) {
+                Toast.makeText(this,"Pas d'emploi enregistré " , Toast.LENGTH_LONG).show();
+            }
 
+            else {
+
+                Gson gson = new Gson();
+
+                monEmploi = gson.fromJson(monemploi, Emploi.class);
+
+            }
 
 
         }
@@ -212,20 +143,52 @@ public class MainActivity extends AppCompatActivity {
 
         afficheJournee = (TextView) findViewById(R.id.afficheJournee);
 
-        /*afficheJournee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AfficheJournee.class);
-                startActivity(intent);
-            }
-        });*/
+
+        mmm.setImageBitmap(admin.getImg());
 
 
     }
 
 
-    public void chargerMonEmploi() {
+
+    //charger personnes:
+       /* public void chargerUsers(){
         AQuery aq = new AQuery(this);
+        String url = "http://192.168.2.127:8080/student/getusers";
+        aq.ajax(url,JSONArray.class,this,"userCallback");
+        }
+
+        public void userCallback(String url,JSONArray jsonArray,AjaxStatus status){
+
+
+            if (jsonArray != null ) {
+                try {
+                    JSONObject jsonObject=jsonArray.getJSONObject(0);
+                    String nomprenom = jsonObject.getString("nom");
+                    nomprenom += " " + jsonObject.getString("prenom");
+
+                    AQuery aq = new AQuery(this);
+                    //aq.id(R.id.myimg).image("");
+
+                    Toast.makeText(this, nomprenom, Toast.LENGTH_LONG).show();
+                }
+                catch (JSONException e) {
+                    Toast.makeText(this,e.toString() +" " ,Toast.LENGTH_LONG).show();
+                }
+            }
+
+            else {
+                Toast.makeText(this,"null",Toast.LENGTH_LONG).show();
+            }
+
+        }*/
+
+
+
+
+
+    public void chargerMonEmploi() {
+
         String url = "http://192.168.2.127:8080/student/gett";
 
         aq.ajax(url, JSONObject.class, this, "chEmp");
@@ -260,6 +223,8 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONArray joursArray = myObject.getJSONArray("jours");
 
+                //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
+
                 String nomJour;
 
                 JSONArray seanceArray;
@@ -270,39 +235,48 @@ public class MainActivity extends AppCompatActivity {
 
                     for (int j = 0; j < seanceArray.length(); j++) {
                         JSONObject seance = seanceArray.getJSONObject(j);
-                        String matiere = seance.getString("matiere");
+                        String matiere = seance.getString("mat");
                         String enseignant = seance.getString("enseignant");
                         String salle = seance.getString("salle");
-                        int numSeance = Integer.parseInt(seance.getString("numSeance"));
+                        int numSeance = Integer.parseInt(seance.getString("numseance"));
                         String type = seance.getString("type");
-                        Boolean pq;
-                        if (seance.getString("parQuinzaine").equals("false"))
+                        Boolean pq=false;
+                        /*if (seance.getString("parQuinzaine").equals("false"))
                             pq = false;
                         else
-                            pq = true;
-
-                        Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
-                        jj.getListSeance().add(s);
+                            pq = true;*/
+                        if (!(matiere.equals(""))) {
+                            Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
+                            jj.getListSeance().add(s);
+                        };
 
                     }
                     monEmploi.getJours().add(jj);
                     Toast.makeText(this, "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
                 }
+
+              //Enregistrer une copie local de l'emploi sur le téléphone
+                Gson gson = new Gson();
+                String monEmploiEnJson = gson.toJson(monEmploi);
+
+                SharedPreferences.Editor editor=getSharedPreferences("monemploi",Context.MODE_PRIVATE).edit();
+                editor.putString("emploi",monEmploiEnJson);
+                editor.apply();
+
+
+                Toast.makeText(this,monEmploi.getJours().size()+" ",Toast.LENGTH_LONG).show();
             } catch (JSONException e) {
 
-                Toast.makeText(this, e.toString(), Toast.LENGTH_LONG);
+                Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
 
             }
         } else {
             Toast.makeText(this, "null", Toast.LENGTH_LONG).show();
         }
 
+
         actuelle();
-        SharedPreferences.Editor editor=getSharedPreferences(MY_SP_FILE,Context.MODE_PRIVATE).edit();
-        Gson gson = new Gson();
-        String monEmploiEnJson = gson.toJson(monEmploi);
-        editor.putString("monemploi",monEmploiEnJson);
-        editor.commit();
+
 
     }
 
@@ -445,6 +419,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < monEmploi.getJours().get(1).getListSeance().size(); i++) {
                     if (monEmploi.getJours().get(1).getListSeance().get(i).getNumSeance() == currentSession) {
                         seanceActuelle = monEmploi.getJours().get(1).getListSeance().get(i);
+                        break;
                     }
 
 
@@ -482,6 +457,8 @@ public class MainActivity extends AppCompatActivity {
             matiere.setText("Pas de cours maintenant");
             seanceActuelle = seanceVide;
         }
+
+
 
 
         matiere.setText(seanceActuelle.getMatiere());
@@ -528,6 +505,8 @@ public class MainActivity extends AppCompatActivity {
             actuelle.setVisibility(View.VISIBLE);
         }
 
+        Toast.makeText(this,"hggg" + jourNum,Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -545,7 +524,101 @@ public class MainActivity extends AppCompatActivity {
     public void voirJournee(View view) {
 
         Intent intent = new Intent(getApplicationContext(), AfficheJournee.class);
-        startActivity(intent);
+        startActivity(intent) ;
 
     }
+
+
+
+
+    // charger liste STATIQUE
+        public void chargerListeStatique(){
+        /*Info info=new Info("LFSI",3,2);
+        info.getEmploi().add(new Groupe("G2"));
+        info.getEmploi().get(0).getJourListe().add(new Jour("Lundi"));
+        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Principe de Gestion","Hanen Bedoui","Amphi B","cours",1,false));
+        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Microeconomie","Hanen Bedoui","GS5","cours",2,false));
+        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("ASD","Hanen Bedoui","Amphi A","cours",3,false));
+        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Prog C","Hanen Bedoui","D14","TD",4,false));
+        info.getEmploi().get(0).getJourListe().get(0).getListSeance().add(new Seance("Maths","Hanen Bedoui","A21","TD",5,false));
+
+
+        info.getEmploi().get(0).getJourListe().add(new Jour("Mardi"));
+        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Maths MARDI" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Prog C MARDI" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Compilation MARDI" , "Souad Ghorbel","c14","TP",4,false));
+        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Techniques Multimédia MARDI" , "Neila Hochlef","c14","TP",5,false));
+        info.getEmploi().get(0).getJourListe().get(1).getListSeance().add(new Seance("Sécurite informatique MARDI" , "Yamen Mkadem","c14","cours",6,true));
+
+        info.getEmploi().get(0).getJourListe().add(new Jour("Mercredi"));
+        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Maths MERCREDI" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Prog C MERCREDI" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Compilation MERCREDI" , "Souad Ghorbel","c14","TP",4,false));
+        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Techniques Multimédia MERCREDI" , "Neila Hochlef","c14","TP",5,false));
+        info.getEmploi().get(0).getJourListe().get(2).getListSeance().add(new Seance("Sécurite informatique MERCREDI" , "Yamen Mkadem","c14","cours",6,true));
+
+        info.getEmploi().get(0).getJourListe().add(new Jour("Jeudi"));
+        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Maths JEUDI" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Prog C JEUDI" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Compilation JEUDI" , "Souad Ghorbel","c14","TP",4,false));
+        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Techniques Multimédia JEUDI" , "Neila Hochlef","c14","TP",5,false));
+        info.getEmploi().get(0).getJourListe().get(3).getListSeance().add(new Seance("Sécurite informatique JEUDI" , "Yamen Mkadem","c14","cours",6,true));
+
+        info.getEmploi().get(0).getJourListe().add(new Jour("Vendredi"));
+        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Maths VENDREDI" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Prog C VENDREDI" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Compilation VENDREDI" , "Souad Ghorbel","c14","TP",4,false));
+        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Techniques Multimédia VENDREDI" , "Neila Hochlef","c14","TP",5,false));
+        info.getEmploi().get(0).getJourListe().get(4).getListSeance().add(new Seance("Sécurite informatique VENDREDI" , "Yamen Mkadem","c14","cours",6,true));
+
+        info.getEmploi().get(0).getJourListe().add(new Jour("Samedi"));
+        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Maths SAMEDI" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Prog C SAMEDI" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Compilation SAMEDI" , "Souad Ghorbel","c14","TP",4,false));
+        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Techniques Multimédia SAMEDI" , "Neila Hochlef","c14","TP",5,false));
+        info.getEmploi().get(0).getJourListe().get(5).getListSeance().add(new Seance("Sécurite informatique SAMEDI" , "Yamen Mkadem","c14","cours",6,true));
+
+
+
+
+
+
+        info.getEmploi().add(new Groupe("G1"));
+        info.getEmploi().get(1).getJourListe().add(new Jour("lun"));
+        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("PPPG1","Hanen Bedoui","Amphi B","cours",1,false));
+        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("Eco G1","Hanen Bedoui","GS5","cours",2,false));
+        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("ASD G1","Hanen Bedoui","Amphi A","cours",3,false));
+        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("G1 Prog C","Hanen Bedoui","D14","TD",4,false));
+        info.getEmploi().get(1).getJourListe().get(0).getListSeance().add(new Seance("G1 Maths","Hanen Bedoui","A21","TD",5,false));
+
+
+        info.getEmploi().get(1).getJourListe().add(new Jour("mar"));
+        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Maths" , "Majdi Agroubi","E6","Cours",1,true));
+        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Prog C" , "Tarek Berhouma","C14","TD",3,false));
+        info.getEmploi().get(1).getJourListe().get(1).getListSeance().add(new Seance("Techniques Multimédia" , "Neila Hochlef","c14","TP",4,false));
+
+
+        myList.add(info);
+
+
+        getJourNum();
+
+
+        String grp = "G2";
+        String fil = "LFSI";
+
+        for (int i = 0; i < myList.size(); i++) {
+            if (myList.get(i).getFiliere().equals(fil)) {
+                maFiliere = myList.get(i);
+            }
+        }
+
+        for (int i = 0; i < maFiliere.getEmploi().size(); i++) {
+            if (maFiliere.getEmploi().get(i).getNom().equals(grp)) {
+                monGroupe = maFiliere.getEmploi().get(i);
+            }
+        }*/
+        }
+
+
 }

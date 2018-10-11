@@ -17,6 +17,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.example.sadokmm.student.Fragments.LoginFragment.admin;
+
 public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<Information> data = Collections.emptyList();
@@ -52,9 +54,9 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             TextView email=(TextView)view.findViewById(R.id.email_profileD);
             CircleImageView imageProfile=(CircleImageView) view.findViewById(R.id.image_profileD);
 
-            /*username.setText(admin.getUsername());
+            username.setText(admin.getNom() +" "+ admin.getPrenom());
             email.setText(admin.getEmail());
-            imageProfile.setImageBitmap(admin.getPhoto());*/
+            imageProfile.setImageBitmap(admin.getImg());
 
 
             HeaderHolder holder = new HeaderHolder(view);

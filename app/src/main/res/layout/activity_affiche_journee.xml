@@ -23,7 +23,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
             android:background="#FCE4EC"
             >
 
@@ -67,7 +66,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/mainRV"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            />
 
 
     </LinearLayout>

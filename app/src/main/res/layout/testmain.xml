@@ -38,7 +38,7 @@
                 android:id="@+id/numSeance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1ère Séance : "
+                android:text=""
                 android:textSize="15dp"
                 />
 
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="8h - 9h30"/>
+                android:text=""/>
 
 
 
@@ -64,8 +64,9 @@
             android:layout_gravity="center"
             android:textSize="35dp"
             android:layout_marginTop="10dp"
-            android:textColor="@color/colorAccent"
-            android:text="Principe de Gestion"/>
+            android:textColor="@color/colorPrimary"
+            android:text="Pas de cours pour l'instant"
+            android:textAlignment="center"/>
 
 
 
@@ -88,10 +89,10 @@
                 android:id="@+id/type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cours"
+                android:text=""
                 android:layout_marginTop="3dp"
                 android:layout_marginLeft="3dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimary"
                 />
 
 
@@ -119,9 +120,9 @@
                 android:id="@+id/enseignant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hanen Bedoui"
+                android:text=""
                 android:layout_marginTop="3dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimary"
                 />
 
 
@@ -150,8 +151,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dp"
                 android:layout_marginTop="3dp"
-                android:text="Amphi B"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:text=""
+                android:textColor="@color/colorPrimary"/>
 
 
 
@@ -177,9 +178,10 @@
                 android:id="@+id/parQuinziane"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Par quinzaine"
+                android:text=""
                 android:layout_marginLeft="3dp"
-                android:layout_marginTop="3dp"/>
+                android:layout_marginTop="3dp"
+                android:textColor="@color/colorPrimary"/>
 
 
 
