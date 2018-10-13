@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         aq = new AQuery(this);
 
-        mmm=(ImageView)findViewById(R.id.mmmm);
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -188,17 +188,23 @@ public class MainActivity extends AppCompatActivity {
 
     public void chargerMonEmploi() {
 
-        String url = "http://192.168.2.127:8080/student/gett";
+        String filiere = admin.getFiliere();
+        int niveau = admin.getNiveau();
+        int groupe = admin.getGroupe();
+
+        String url = "http://192.168.2.127:8080/student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+
+//        Snackbar.make(getCurrentFocus(),url,Snackbar.LENGTH_LONG).show();
 
         aq.ajax(url, JSONObject.class, this, "chEmp");
 
     }
 
 
-    public void chEmp(String url, JSONObject jsonObject, AjaxStatus status) {
+    public void chEmp(String url, JSONObject myObject, AjaxStatus status) {
 
 
-        if (jsonObject != null)
+        if (myObject != null)
 
 
         {
@@ -207,8 +213,8 @@ public class MainActivity extends AppCompatActivity {
 
             try {
 
-                JSONArray jsonArray = jsonObject.getJSONArray("data");
-                JSONObject myObject = jsonArray.getJSONObject(0);
+                //JSONArray jsonArray = jsonObject.getJSONArray("data");
+                //JSONObject myObject = jsonArray.getJSONObject(0);
 
 
                 String id = myObject.getString("_id");
@@ -239,7 +245,12 @@ public class MainActivity extends AppCompatActivity {
                         String salle = seance.getString("salle");
                         int numSeance = Integer.parseInt(seance.getString("numseance"));
                         String type = seance.getString("type");
-                        Boolean pq=false;
+                        String pqn= seance.getString("pq");
+                        Boolean pq;
+                        if (pqn.equals("false"))
+                            pq = false ;
+                        else pq=true;
+
                         /*if (seance.getString("parQuinzaine").equals("false"))
                             pq = false;
                         else
@@ -504,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
             actuelle.setVisibility(View.VISIBLE);
         }
 
-        Toast.makeText(this,"hggg" + jourNum,Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,"hggg" + jourNum,Toast.LENGTH_LONG).show();
 
     }
 
@@ -524,6 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), AfficheJournee.class);
         startActivity(intent) ;
+
 
     }
 
@@ -619,5 +631,14 @@ public class MainActivity extends AppCompatActivity {
         }*/
         }
 
+
+
+    //utilisé par addTouchListener du recyclerView en NavigationDrawerFragment
+    public void deconnexion(){
+
+            finish();
+
+
+    }
 
 }

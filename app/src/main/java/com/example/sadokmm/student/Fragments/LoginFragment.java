@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.myActivity;
 
 public class LoginFragment extends Fragment {
@@ -180,10 +181,10 @@ public class LoginFragment extends Fragment {
         try {
 
             prgDialog = new ProgressDialog(getActivity());
-            prgDialog.setMessage("Chargement en cours ...");
+            prgDialog.setMessage("Connexion en cours ...");
             prgDialog.setIndeterminate(false);
-            prgDialog.setMax(100);
-            prgDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            //prgDialog.setMax(100);
+            prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             prgDialog.setCancelable(false);
             prgDialog.show();
 
@@ -194,7 +195,7 @@ public class LoginFragment extends Fragment {
 
                 if (object != null) {
                     Toast.makeText(getActivity(), "image téléchargé", Toast.LENGTH_LONG).show();
-                    im[0] = object;
+                    im[0] = getResizedBitmap(object,500);
                     prgDialog.dismiss();
 
                     //créer l'admin et ouvrir l'application

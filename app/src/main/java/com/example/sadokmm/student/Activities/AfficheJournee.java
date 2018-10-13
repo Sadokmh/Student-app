@@ -49,6 +49,7 @@ public class AfficheJournee extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_affiche_journee);
 
+        Toast.makeText(this,"Hello",Toast.LENGTH_LONG).show();
 
         toolbar=(android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

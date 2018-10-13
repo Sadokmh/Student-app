@@ -178,8 +178,8 @@ public class firstActivity extends AppCompatActivity {
             prgDialog = new ProgressDialog(this);
             prgDialog.setMessage("Chargement en cours ...");
             prgDialog.setIndeterminate(false);
-            prgDialog.setMax(100);
-            prgDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            //prgDialog.setMax(100);
+            prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             prgDialog.setCancelable(false);
             prgDialog.show();
 
@@ -190,7 +190,7 @@ public class firstActivity extends AppCompatActivity {
 
                     if (object != null) {
                         Toast.makeText(getApplicationContext(), "image téléchargé", Toast.LENGTH_LONG).show();
-                        im[0] = object;
+                        im[0] = getResizedBitmap(object,500);
                         prgDialog.dismiss();
 
                         //créer l'admin et ouvrir l'application
@@ -213,5 +213,22 @@ public class firstActivity extends AppCompatActivity {
         catch (Exception e) {
             Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 }

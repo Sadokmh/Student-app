@@ -1,5 +1,6 @@
 package com.example.sadokmm.student.Fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.sadokmm.student.Activities.MainActivity;
 import com.example.sadokmm.student.Adapters.AdapterDrawer;
+import com.example.sadokmm.student.Listeners.RecyclerTouchListener;
 import com.example.sadokmm.student.Objects.Information;
 import com.example.sadokmm.student.R;
 
@@ -74,6 +77,47 @@ public class NavigationDrawerFragment extends Fragment  {
 
         recyclerView.setAdapter(mAdap);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(),recyclerView,new RecyclerTouchListener.ClickListener(){
+
+            @Override
+            public void onClick(View view, int position) {
+
+                switch (position) {
+
+                    case 1 : {
+
+                    }
+                    case 2 : {
+
+                    }
+                    case 3 : {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                        alert.setTitle("A propos");
+                        alert.setMessage("ISG STUDENT est une application blablbablaaa .......\n blablabla ..........");
+                        alert.setPositiveButton("OK", null);
+                        alert.show();
+                        break;
+                    }
+                    case 4 : {
+                        SharedPreferences.Editor editor=getActivity().getSharedPreferences("user",Context.MODE_PRIVATE).edit();
+                        editor.clear();
+                        editor.commit();
+                        getActivity().finish();
+                        ((MainActivity) getActivity()).deconnexion();
+                        break;
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
     }
 
 
