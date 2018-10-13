@@ -41,7 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.sadokmm.student.Fragments.LoginFragment.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         afficheJournee = (TextView) findViewById(R.id.afficheJournee);
 
 
-        mmm.setImageBitmap(admin.getImg());
 
 
     }
@@ -261,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
 
                 SharedPreferences.Editor editor=getSharedPreferences("monemploi",Context.MODE_PRIVATE).edit();
                 editor.putString("emploi",monEmploiEnJson);
-                editor.apply();
+                editor.commit();
 
 
                 Toast.makeText(this,monEmploi.getJours().size()+" ",Toast.LENGTH_LONG).show();

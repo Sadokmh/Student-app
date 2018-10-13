@@ -1,5 +1,6 @@
 package com.example.sadokmm.student.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,22 +9,29 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.androidquery.callback.BitmapAjaxCallback;
 import com.example.sadokmm.student.Activities.MainActivity;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.myActivity;
 
 public class LoginFragment extends Fragment {
 
@@ -31,9 +39,15 @@ public class LoginFragment extends Fragment {
     private TextView connexion,verifMdp,verifEmail;
     private AQuery aq;
 
+    private String nom,id,prenom,mdp,imgUrl,filiere;
+    int groupe,niveau;
+
     Bitmap img;
 
-    public static User admin;
+
+    ProgressDialog prgDialog;
+
+    ImageView imm;
 
 
     public LoginFragment() {
@@ -56,14 +70,10 @@ public class LoginFragment extends Fragment {
         verifMdp=(TextView) view.findViewById(R.id.verifMdp);
         email=(EditText) view.findViewById(R.id.emailLogin);
         pass=(EditText) view.findViewById(R.id.passLogin);
+        imm=(ImageView)view.findViewById(R.id.imm);
 
         aq=new AQuery(getActivity().getApplicationContext());
 
-        //try bitmap load aquery
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-         int w = 700, h = 480;
-
-        img = Bitmap.createBitmap(w, h, conf);
 
         connexion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,40 +133,34 @@ public class LoginFragment extends Fragment {
                     verifMdp.setText("Mot de passe incorrecte");
                 } else {
                     //Shared Preferences to save connectUser
-                    SharedPreferences.Editor editor = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor editor = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
                     editor.putString("connectUser", email.getText().toString());
-                    editor.commit();
-
-                    String id=jsonObject.getString("_id");
-                    String nom=jsonObject.getString("nom");
-                    String prenom=jsonObject.getString("prenom");
-                    String filiere=jsonObject.getString("filiere");
-                    String pass=jsonObject.getString("pass");
+                    editor.commit();*/
 
 
 
-                    aq.ajax("http://192.168.2.127:8080/"+jsonObject.getString("img"),Bitmap.class,0,new AjaxCallback<Bitmap>(){
-                        @Override
-                        public void callback(String url, Bitmap object, AjaxStatus status) {
-                            if(object != null)
-                            {
-                                img = object;
-                                Toast.makeText(getActivity().getApplicationContext(),"image crée",Toast.LENGTH_LONG).show();
-                            }
-                            else {
-                                Toast.makeText(getActivity().getApplicationContext(),"pas d'image",Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
+                     id=jsonObject.getString("_id");
+                     nom=jsonObject.getString("nom");
+                     prenom=jsonObject.getString("prenom");
+                     filiere=jsonObject.getString("filiere");
+                     mdp=jsonObject.getString("pass");
+                     imgUrl="http://192.168.2.127:8080/"+jsonObject.getString("img");
 
 
-                    int niveau = Integer.parseInt(jsonObject.getString("niveau"));
-                    int groupe = Integer.parseInt(jsonObject.getString("groupe"));
+                     niveau = Integer.parseInt(jsonObject.getString("niveau"));
+                     groupe = Integer.parseInt(jsonObject.getString("groupe"));
+
+                     downloadImage(imgUrl);
+                    //imm.setImageBitmap(img);
 
 
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    admin=new User(id,nom,prenom,email.getText().toString(),pass,img,filiere,groupe,niveau);
-                    startActivity(intent);
+
+
+                    //Intent intent = new Intent(getContext(), MainActivity.class);
+
+                    //admin=new User(id,nom,prenom,email.getText().toString(),mdp,img,filiere,groupe,niveau);
+
+                    //startActivity(intent);
                 }
             }
             catch (JSONException e) {
@@ -166,5 +170,62 @@ public class LoginFragment extends Fragment {
         }
 
     }
+
+
+
+    public void downloadImage(String imageUrl) {
+
+        final Bitmap[] im = new Bitmap[1];
+
+        try {
+
+            prgDialog = new ProgressDialog(getActivity());
+            prgDialog.setMessage("Chargement en cours ...");
+            prgDialog.setIndeterminate(false);
+            prgDialog.setMax(100);
+            prgDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            prgDialog.setCancelable(false);
+            prgDialog.show();
+
+
+            aq.ajax(imageUrl, Bitmap.class, new AjaxCallback<Bitmap>() {
+                @Override
+            public void callback(String url, Bitmap object, AjaxStatus status) {
+
+                if (object != null) {
+                    Toast.makeText(getActivity(), "image téléchargé", Toast.LENGTH_LONG).show();
+                    im[0] = object;
+                    prgDialog.dismiss();
+
+                    //créer l'admin et ouvrir l'application
+                    admin=new User(id,nom,prenom,email.getText().toString(),mdp,im[0],filiere,groupe,niveau);
+
+
+
+                    SharedPreferences.Editor editor=getActivity().getSharedPreferences("user",Context.MODE_PRIVATE).edit();
+                    editor.putString("statut","true");
+                    editor.putString("email",admin.getEmail());
+                    editor.putString("prenom",admin.getPrenom());
+                    editor.putString("nom" , admin.getNom());
+                    editor.putString("filiere" , admin.getFiliere());
+                    editor.putInt("groupe",admin.getGroupe());
+                    editor.putInt("niveau",admin.getNiveau());
+                    editor.commit();
+
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    startActivity(intent);
+
+                }
+                else Toast.makeText(getActivity(), "image non téléchargé", Toast.LENGTH_LONG).show();
+                }
+            }).progress(prgDialog).show(prgDialog);
+
+        }
+
+        catch (Exception e) {
+            Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 }

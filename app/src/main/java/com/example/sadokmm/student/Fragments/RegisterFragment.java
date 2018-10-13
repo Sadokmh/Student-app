@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,16 +27,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.SimpleMultiPartRequest;
+import com.android.volley.toolbox.Volley;
+import com.androidquery.util.Constants;
 import com.example.sadokmm.student.Activities.MainActivity;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
 
+
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.listUser;
 
 public class RegisterFragment extends Fragment {
@@ -42,10 +56,12 @@ public class RegisterFragment extends Fragment {
     final static int OPENCAM_CODE = 22;
     final static int OPENGALLERY_CODE = 23;
 
+    private Uri filepath;
+
 
     private TextView registerBtn,errorTextUsername,errorTextEmail,errorTextPass,errorTextPassConfirm,errorTextPhoto;
     private EditText email, pass, confirmPass,nom,prenom;
-    private Drawable myNewImage;
+    private Bitmap myNewImage;
     private CircleImageView photo;
     private Spinner spinnerFiliere,spinnerNiveau,spinnerGroupe;
     private boolean ok;
@@ -175,16 +191,16 @@ public class RegisterFragment extends Fragment {
 
                 if (ok){
 
-                    listUser.add(new User("011",nomtxt,prenomtxt,emailtxt,passtxt,dToBitmap(myNewImage),filieretxt,groupe,niveauFil));
+                    //listUser.add(new User("011",nomtxt,prenomtxt,emailtxt,passtxt,dToBitmap(myNewImage),filieretxt,groupe,niveauFil));
 
                     //Shared Preferences to save connectUser
                     SharedPreferences.Editor editor=getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
                     editor.putString("connectUser",emailtxt);
                     editor.commit();
 
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra("admin", emailtxt);
-                    startActivity(intent);
+                    postUser(nomtxt,prenomtxt,emailtxt,passtxt,filieretxt,String.valueOf(niveauFil),String.valueOf(groupe));
+
+                    /**/
 
                 }
 
@@ -249,8 +265,9 @@ public class RegisterFragment extends Fragment {
             case OPENCAM_CODE:
                 if (resultCode == RESULT_OK) {
                     Bundle extras = data.getExtras();
-                    myNewImage = new BitmapDrawable(getResources(),(Bitmap)extras.get("data"));
-                    photo.setImageDrawable(myNewImage);
+                    myNewImage = (Bitmap)extras.get("data");
+                    photo.setImageBitmap(myNewImage);
+                    filepath = data.getData();
                 }
 
                 break;
@@ -259,11 +276,12 @@ public class RegisterFragment extends Fragment {
                     Uri dat= data.getData();
 
                     try {
-                        myNewImage =  new BitmapDrawable(getResources(),MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), dat));
+                        myNewImage =  MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), dat);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    photo.setImageDrawable(myNewImage);
+                    photo.setImageBitmap(myNewImage);
+                    filepath= data.getData();
                 }
                 break;
         }
@@ -466,7 +484,70 @@ public class RegisterFragment extends Fragment {
             }
         });
 
+        Bitmap p;
+
+
     }
+
+
+    // try to save img to server
+
+           public String getPath(Uri uri) {
+                Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                cursor.moveToFirst();
+                String document_id = cursor.getString(0);
+                document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+                cursor.close();
+
+                cursor = getActivity().getContentResolver().query(
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+                cursor.moveToFirst();
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                cursor.close();
+
+                return path;
+            }
+
+
+
+            public void postUser(String nom , String prenom , String email , String pass , String filiere , String niveau , String groupe){
+                SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, "http://192.168.2.127:8080/student/u",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("Response", response);
+                                Toast.makeText(getActivity(), "Okey", Toast.LENGTH_LONG).show();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+                smr.addStringParam("nom", nom);
+                smr.addStringParam("prenom", prenom);
+                smr.addStringParam("email", email);
+                smr.addStringParam("pass", pass);
+                smr.addStringParam("filiere", filiere);
+                smr.addStringParam("niveau", niveau);
+                smr.addStringParam("groupe", groupe);
+                smr.addFile("img", getPath(filepath));
+
+                RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
+                mRequestQueue.add(smr);
+
+                admin=new User("0",nom,prenom,email,pass,myNewImage,filiere,Integer.parseInt(groupe),Integer.parseInt(niveau));
+
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
+                editor.putString("connectUser", email);
+                editor.commit();
+
+                Intent intent = new Intent(getContext(), MainActivity.class);
+
+                startActivity(intent);
+
+            }
 
 
 

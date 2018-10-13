@@ -17,7 +17,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.example.sadokmm.student.Fragments.LoginFragment.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
+
 
 public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
