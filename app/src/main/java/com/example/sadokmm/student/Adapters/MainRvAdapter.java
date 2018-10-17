@@ -3,6 +3,7 @@ package com.example.sadokmm.student.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,7 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view=layoutInflater.inflate(R.layout.custom_main_rv_item,viewGroup,false);
+        View view=layoutInflater.inflate(R.layout.customitem,viewGroup,false);
         ViewHolder viewHolder=new ViewHolder(view);
 
 
@@ -84,14 +85,13 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
             viewHolder.numSeance.setText("6ème Séance : ");
             viewHolder.sTime.setText("16:25 - 17:55");
         }
-        else {
+        /*else {
             viewHolder.numSeance.setText("");
             viewHolder.sTime.setText("");
             viewHolder.coursLayout.setVisibility(View.INVISIBLE);
             viewHolder.profLayout.setVisibility(View.INVISIBLE);
             viewHolder.salleLayout.setVisibility(View.INVISIBLE);
-        }
-
+        }/*/
 
 
 
@@ -128,7 +128,7 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView numSeance,matiere,enseignant,salle,parQuinzaine,type,sTime;
-        private LinearLayout parQuinzaineLayout,actuelle,coursLayout,profLayout,salleLayout;
+        private CardView parQuinzaineLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -138,13 +138,13 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
             enseignant = (TextView)itemView.findViewById(R.id.enseignant);
             salle=(TextView)itemView.findViewById(R.id.salle);
             type=(TextView)itemView.findViewById(R.id.type);
-            parQuinzaine = (TextView)itemView.findViewById(R.id.parQuinziane);
-            parQuinzaineLayout=(LinearLayout)itemView.findViewById(R.id.parQuinzaineLayout);
-            actuelle=(LinearLayout)itemView.findViewById(R.id.actuelle);
+           // parQuinzaine = (TextView)itemView.findViewById(R.id.parQuinziane);
+            parQuinzaineLayout=(CardView)itemView.findViewById(R.id.parQuinzaineLayout);
+           // actuelle=(LinearLayout)itemView.findViewById(R.id.actuelle);
             sTime = (TextView)itemView.findViewById(R.id.sTime);
-            salleLayout=(LinearLayout)itemView.findViewById(R.id.salleLayout);
-            profLayout=(LinearLayout)itemView.findViewById(R.id.profLayout);
-            coursLayout=(LinearLayout)itemView.findViewById(R.id.coursLayout);
+            //salleLayout=(LinearLayout)itemView.findViewById(R.id.salleLayout);
+            //profLayout=(LinearLayout)itemView.findViewById(R.id.profLayout);
+            //coursLayout=(LinearLayout)itemView.findViewById(R.id.coursLayout);
 
         }
     }

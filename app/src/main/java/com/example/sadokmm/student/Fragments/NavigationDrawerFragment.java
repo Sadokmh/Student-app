@@ -86,10 +86,10 @@ public class NavigationDrawerFragment extends Fragment  {
                 switch (position) {
 
                     case 1 : {
-
+                        break;
                     }
                     case 2 : {
-
+                        break;
                     }
                     case 3 : {
                         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());

@@ -5,9 +5,10 @@
     <color name="colorAccent">#53323D</color>
     <color name="colorHighlight">#EA9D97</color>
     <color name="white">#FFFFFF</color>
-    <color name="colorLight">#D7CCC8</color>
+    <color name="colorLight">#f6f3f3</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#757575</color>
     <color name="dividerColor">#E3F2FD</color>
+    <color name="colorPrimaryLight">#c24367</color>
 
 </resources>

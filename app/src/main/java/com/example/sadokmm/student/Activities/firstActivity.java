@@ -35,6 +35,8 @@ public class firstActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private PageAdapterFirst pageAdapter;
 
+    public final static String publicUrl = "http://192.168.43.196:8080/student/";
+
     public static Activity myActivity;
 
     public static List<User> listUser = new ArrayList<>();
@@ -113,7 +115,7 @@ public class firstActivity extends AppCompatActivity {
     public void chercherUserByEmail(String email) {
 
 
-        String url= "http://192.168.2.127:8080/student/getuser/"+email;
+        String url= publicUrl +"getuser/"+email;
 
         aq.ajax(url, JSONObject.class,this,"emailCallback");
 

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorLight">
+
+        <ImageView
+            android:id="@+id/timeicon"
+            android:layout_width="43dp"
+            android:layout_height="44dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="36dp"
+            android:src="@drawable/ic_access_" />
+
+
+        <TextView
+            android:id="@+id/sTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/numSeance"
+            android:layout_below="@+id/numSeance"
+            android:layout_marginTop="0dp"
+            android:text="08:00 - 09:30 " />
+
+        <TextView
+            android:id="@+id/numSeance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="85dp"
+            android:text="1ère séance : "
+            android:textColor="@color/solid_black"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/myview"
+            android:layout_width="73dp"
+            android:layout_height="2dp"
+
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="38dp"
+            android:layout_marginTop="53dp"
+            android:background="@color/colorPrimary" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/parQuinzaineLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/view1"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorHighlight"
+            android:backgroundTint="@color/colorHighlight"
+            android:rotation="-20"
+            app:cardCornerRadius="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-smallcaps"
+                android:padding="5dp"
+                android:text="1 / 15"
+                android:textColor="@color/white" />
+        </android.support.v7.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/matiere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="82dp"
+            android:fontFamily="serif"
+            android:gravity="center"
+            android:text="Nom matière"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="35dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/enseignant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/salle"
+            android:layout_marginEnd="32dp"
+            android:fontFamily="serif"
+            android:text="Mkaddem"
+            android:textColor="@color/solid_black"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="39dp"
+            android:layout_above="@+id/enseignant"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="-30dp"
+            android:layout_marginEnd="6dp"
+            android:src="@drawable/ic_person" />
+
+        <TextView
+            android:id="@+id/salle"
+            android:layout_width="94dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="79dp"
+            android:layout_marginStart="31dp"
+            android:fontFamily="serif"
+            android:text="Amphi 2"
+            android:textColor="@color/solid_black"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_above="@+id/enseignant"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="-27dp"
+            android:layout_marginStart="6dp"
+            android:src="@drawable/ic_location_accent" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="25dp"
+            android:layout_height="1dp"
+            android:layout_alignEnd="@+id/enseignant"
+            android:layout_below="@+id/enseignant"
+            android:layout_marginEnd="0dp"
+            android:background="@color/colorPrimary" />
+
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="23dp"
+            android:layout_height="1dp"
+            android:layout_below="@+id/type"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-17dp"
+            android:background="@color/colorPrimary" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="20dp"
+            android:layout_height="1dp"
+            android:layout_alignStart="@+id/salle"
+            android:layout_below="@+id/enseignant"
+            android:background="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="17dp"
+            android:fontFamily="serif"
+            android:text="cours"
+            android:textColor="@color/solid_black"
+            android:textStyle="bold" />
+
+
+        <ImageView
+            android:id="@+id/icon_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/type"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_subtitles_black_24dp" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimary"/>
+
+
+
+
+</LinearLayout>

@@ -52,6 +52,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.listUser;
+import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class RegisterFragment extends Fragment {
 
@@ -498,7 +499,7 @@ public class RegisterFragment extends Fragment {
 
 
             public void postUser(String nom , String prenom , String email , String pass , String filiere , String niveau , String groupe){
-                SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, "http://192.168.2.127:8080/student/u",
+                SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl+"u",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {

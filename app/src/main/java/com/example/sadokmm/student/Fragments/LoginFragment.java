@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,11 +34,12 @@ import org.json.JSONObject;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.myActivity;
+import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class LoginFragment extends Fragment {
 
     private EditText pass,email;
-    private TextView connexion,verifMdp,verifEmail;
+    private TextView connexion,verifMdp,verifEmail,testPass;
     private AQuery aq;
 
     private String nom,id,prenom,mdp,imgUrl,filiere;
@@ -72,6 +74,17 @@ public class LoginFragment extends Fragment {
         email=(EditText) view.findViewById(R.id.emailLogin);
         pass=(EditText) view.findViewById(R.id.passLogin);
         imm=(ImageView)view.findViewById(R.id.imm);
+        testPass=(TextView)view.findViewById(R.id.passTest);
+
+        testPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                admin = new User("0","Mhiri","Sadok Mourad","Sadokmhiri@gmail.com","1223",getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.sadok),500),"lfig",4,3);
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         aq=new AQuery(getActivity().getApplicationContext());
 
@@ -113,7 +126,7 @@ public class LoginFragment extends Fragment {
     public void chercherUserByEmail(String email) {
 
 
-        String url= "http://192.168.2.127:8080/student/getuser/"+email;
+        String url= publicUrl + "getuser/"+email;
 
         aq.ajax(url, JSONObject.class,this,"emailCallback");
 
@@ -145,7 +158,7 @@ public class LoginFragment extends Fragment {
                      prenom=jsonObject.getString("prenom");
                      filiere=jsonObject.getString("filiere");
                      mdp=jsonObject.getString("pass");
-                     imgUrl="http://192.168.2.127:8080/"+jsonObject.getString("img");
+                     imgUrl="http://192.168.43.196:8080/"+jsonObject.getString("img");
 
 
                      niveau = Integer.parseInt(jsonObject.getString("niveau"));
