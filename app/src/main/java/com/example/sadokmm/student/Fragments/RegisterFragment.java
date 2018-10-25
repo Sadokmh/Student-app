@@ -1,6 +1,7 @@
 package com.example.sadokmm.student.Fragments;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,13 +34,22 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.misc.ImageUtils;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.util.Constants;
 import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Objects.Emploi;
+import com.example.sadokmm.student.Objects.Jour;
+import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.google.gson.Gson;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,9 +59,13 @@ import java.util.UUID;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+import static com.example.sadokmm.student.Activities.firstActivity.EMPLOI_FILE;
+import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.listUser;
+import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class RegisterFragment extends Fragment {
@@ -75,6 +89,10 @@ public class RegisterFragment extends Fragment {
     ArrayList<String> listFiliere = new ArrayList<>();
     ArrayList<String> listGroupe = new ArrayList<>();
     ArrayList<String> listNiveau = new ArrayList<>();
+
+    ProgressDialog prgDialog;
+
+    RequestQueue requestQueue;
 
 
     public RegisterFragment() {
@@ -197,7 +215,7 @@ public class RegisterFragment extends Fragment {
                     //listUser.add(new User("011",nomtxt,prenomtxt,emailtxt,passtxt,dToBitmap(myNewImage),filieretxt,groupe,niveauFil));
 
                     //Shared Preferences to save connectUser
-                    SharedPreferences.Editor editor=getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
+                    SharedPreferences.Editor editor=getActivity().getSharedPreferences("userFile", MODE_PRIVATE).edit();
                     editor.putString("connectUser",emailtxt);
                     editor.commit();
 
@@ -212,6 +230,8 @@ public class RegisterFragment extends Fragment {
 
             }
         });
+
+        requestQueue = Volley.newRequestQueue(getContext());
 
 
         return view;
@@ -499,7 +519,7 @@ public class RegisterFragment extends Fragment {
 
 
             public void postUser(String nom , String prenom , String email , String pass , String filiere , String niveau , String groupe){
-                SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl+"u",
+                SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl+"student/u",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -524,17 +544,196 @@ public class RegisterFragment extends Fragment {
                 RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
                 mRequestQueue.add(smr);
 
-                admin=new User("0",nom,prenom,email,pass,myNewImage,filiere,Integer.parseInt(groupe),Integer.parseInt(niveau));
+                chargerMonEmploi(filiere,Integer.parseInt(niveau),Integer.parseInt(groupe),email);
 
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
-                editor.putString("connectUser", email);
-                editor.commit();
+                //admin=new User("0",nom,prenom,email,pass,myNewImage,filiere,Integer.parseInt(groupe),Integer.parseInt(niveau));
 
-                Intent intent = new Intent(getContext(), MainActivity.class);
 
-                startActivity(intent);
+
 
             }
+
+
+
+    public void chargerMonEmploi(String filiere , int niveau , int groupe , final String mail) {
+
+
+
+        String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        Toast.makeText(getContext(),url,Toast.LENGTH_LONG).show();
+
+        prgDialog = new ProgressDialog(getContext());
+        prgDialog.setMessage("chargement en cours ...");
+        prgDialog.setIndeterminate(false);
+        //prgDialog.setMax(100);
+        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        prgDialog.setCancelable(false);
+        prgDialog.show();
+
+        JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject myObject) {
+
+
+                Toast.makeText(getContext(), "not null", Toast.LENGTH_LONG).show();
+
+                try {
+
+
+                    String id = myObject.getString("_id");
+                    String maFiliere = myObject.getString("filiere");
+                    int niveau = Integer.parseInt(myObject.getString("niveau"));
+                    int groupe = Integer.parseInt(myObject.getString("groupe"));
+
+                    monEmploi = new Emploi(id, maFiliere, niveau, groupe);
+
+                    JSONArray joursArray = myObject.getJSONArray("jours");
+
+                    String nomJour;
+
+                    JSONArray seanceArray;
+                    for (int i = 0; i < joursArray.length(); i++) {
+                        nomJour = joursArray.getJSONObject(i).getString("nom");
+                        Jour jj = new Jour(nomJour);
+                        seanceArray = joursArray.getJSONObject(i).getJSONArray("seances");
+
+                        for (int j = 0; j < seanceArray.length(); j++) {
+                            JSONObject seance = seanceArray.getJSONObject(j);
+                            String matiere = seance.getString("mat");
+                            String enseignant = seance.getString("enseignant");
+                            String salle = seance.getString("salle");
+                            int numSeance = Integer.parseInt(seance.getString("numseance"));
+                            String type = seance.getString("type");
+                            String pqn= seance.getString("pq");
+                            Boolean pq;
+                            if (pqn.equals("false"))
+                                pq = false ;
+                            else pq=true;
+
+                            if (!(matiere.equals(""))) {
+                                Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
+                                jj.getListSeance().add(s);
+                            }
+
+                        }
+                        monEmploi.getJours().add(jj);
+
+                    }
+
+                    //Enregistrer une copie local de l'emploi sur le téléphone
+                    Gson gson = new Gson();
+                    String monEmploiEnJson = gson.toJson(monEmploi);
+
+                    SharedPreferences.Editor editor=getContext().getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+                    editor.putString("emploi",monEmploiEnJson);
+                    editor.commit();
+
+                    chargerUser(mail);
+
+                    prgDialog.dismiss();
+
+
+
+                    Toast.makeText(getContext(),monEmploiEnJson,Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+    }
+
+
+
+
+
+    public void chargerUser(String emailusr ){
+
+        String url = publicUrl + "student/getuser/"+emailusr;
+
+        prgDialog = new ProgressDialog(getContext());
+        prgDialog.setMessage("Connexion en cours ...");
+        prgDialog.setIndeterminate(false);
+        //prgDialog.setMax(100);
+        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        prgDialog.setCancelable(false);
+        prgDialog.show();
+
+        Toast.makeText(getContext(),"chercheusr",Toast.LENGTH_LONG).show();
+
+        JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+
+                String id , email , nom , prenom , filiere  , imgUrl ;
+                int niveau , groupe ;
+
+
+                try {
+                    id = jsonObject.getString("_id");
+                    nom = jsonObject.getString("nom");
+                    prenom = jsonObject.getString("prenom");
+                    filiere = jsonObject.getString("filiere");
+                    imgUrl = publicUrl + jsonObject.getString("img");
+                    email = jsonObject.getString("email");
+                    niveau = Integer.parseInt(jsonObject.getString("niveau"));
+                    groupe = Integer.parseInt(jsonObject.getString("groupe"));
+                    admin = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
+
+                    SharedPreferences.Editor editor=getContext().getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
+                    editor.putBoolean("statut",true);
+                    editor.putString("email",admin.getEmail());
+                    editor.putString("prenom",admin.getPrenom());
+                    editor.putString("nom" , admin.getNom());
+                    editor.putString("filiere" , admin.getFiliere());
+                    editor.putString("img",admin.getImg());
+                    editor.putInt("groupe",admin.getGroupe());
+                    editor.putInt("niveau",admin.getNiveau());
+                    editor.commit();
+                    Toast.makeText(getContext(),"chercheusr22",Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    intent.putExtra("type","register");
+                    intent.putExtra("email",email);
+                    prgDialog.dismiss();
+                    Toast.makeText(getContext(),"chercheusr33",Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+
+                    Toast.makeText(getContext(),"chercheusr44",Toast.LENGTH_LONG).show();
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //return user;
+
+    }
 
 
 }

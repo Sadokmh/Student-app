@@ -8,18 +8,16 @@ public class User {
     private String nom ;
     private String prenom ;
     private String email ;
-    private String pass;
-    private Bitmap img;
+    private String img;
     private String filiere;
     private int groupe ;
     private int niveau ;
 
-    public User(String id, String nom, String prenom, String email,String pass, Bitmap img, String filiere, int groupe, int niveau) {
+    public User(String id, String nom, String prenom, String email, String img, String filiere, int groupe, int niveau) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
-        this.pass = pass;
         this.img = img;
         this.filiere = filiere;
         this.groupe = groupe;
@@ -59,11 +57,11 @@ public class User {
         this.email = email;
     }
 
-    public Bitmap getImg() {
+    public String getImg() {
         return img;
     }
 
-    public void setImg(Bitmap img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
@@ -91,11 +89,4 @@ public class User {
         this.niveau = niveau;
     }
 
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
 }

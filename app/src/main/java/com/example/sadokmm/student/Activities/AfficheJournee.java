@@ -14,7 +14,7 @@ import com.example.sadokmm.student.Adapters.MainRvAdapter;
 import com.example.sadokmm.student.R;
 
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
-import static com.example.sadokmm.student.Activities.MainActivity.monEmploi;
+import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 
 public class AfficheJournee extends AppCompatActivity {
 
@@ -49,63 +49,66 @@ public class AfficheJournee extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_affiche_journee);
 
-        Toast.makeText(this,"Hello",Toast.LENGTH_LONG).show();
+        try {
 
-        toolbar=(android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Votre journée");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Toast.makeText(this, "Hello", Toast.LENGTH_LONG).show();
 
-
-        flechePrec=(ImageView)findViewById(R.id.prec);
-        fleshSuiv=(ImageView)findViewById(R.id.suiv);
-        jour=(TextView) findViewById(R.id.jourAffiche);
+            toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("Votre journée");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+            flechePrec = (ImageView) findViewById(R.id.prec);
+            fleshSuiv = (ImageView) findViewById(R.id.suiv);
+            jour = (TextView) findViewById(R.id.jourAffiche);
 
 
-        rv=(RecyclerView)findViewById(R.id.mainRV);
-        mAdapter=new MainRvAdapter(this);
+            rv = (RecyclerView) findViewById(R.id.mainRV);
+            mAdapter = new MainRvAdapter(this);
 
-        positionJour = jourNum;
-
-
-
-        //mAdapter.setMyList((monGroupe.getJourListe().get(jourNum).getListSeance()));
-        mAdapter.setMyList(monEmploi.getJours().get(jourNum).getListSeance());
-        jour.setText(monEmploi.getJours().get(jourNum).getNom());
-        Toast.makeText(this, "taille jours array: "+monEmploi.getJours().size(), Toast.LENGTH_LONG).show();
+            //positionJour = jourNum;
+            positionJour = jourNum;
 
 
-        //passer à la journée suivante
-        fleshSuiv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (positionJour==5) positionJour = -1;
-                mAdapter.setMyList(monEmploi.getJours().get(++positionJour).getListSeance());
-                jour.setText(monEmploi.getJours().get(positionJour).getNom());
-
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+            //mAdapter.setMyList((monGroupe.getJourListe().get(jourNum).getListSeance()));
+            mAdapter.setMyList(monEmploi.getJours().get(jourNum).getListSeance());
+            jour.setText(monEmploi.getJours().get(jourNum).getNom());
+            Toast.makeText(this, "taille jours array: " + monEmploi.getJours().size(), Toast.LENGTH_LONG).show();
 
 
+            //passer à la journée suivante
+            fleshSuiv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (positionJour == 5) positionJour = -1;
+                    mAdapter.setMyList(monEmploi.getJours().get(++positionJour).getListSeance());
+                    jour.setText(monEmploi.getJours().get(positionJour).getNom());
 
-        //passer à la journée précédente
-        flechePrec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (positionJour==0) positionJour = 6;
-                mAdapter.setMyList(monEmploi.getJours().get(--positionJour).getListSeance());
-                jour.setText(monEmploi.getJours().get(positionJour).getNom());
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
 
 
+            //passer à la journée précédente
+            flechePrec.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (positionJour == 0) positionJour = 6;
+                    mAdapter.setMyList(monEmploi.getJours().get(--positionJour).getListSeance());
+                    jour.setText(monEmploi.getJours().get(positionJour).getNom());
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
 
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(mAdapter);
+
+            rv.setLayoutManager(new LinearLayoutManager(this));
+            rv.setAdapter(mAdapter);
+
+        }
+        catch (Exception e) {
+            jour.setText(e.toString());
+        }
 
 
 

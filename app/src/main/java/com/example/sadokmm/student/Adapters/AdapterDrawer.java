@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.androidquery.AQuery;
 import com.example.sadokmm.student.Objects.Information;
 import com.example.sadokmm.student.R;
 
@@ -27,12 +28,14 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int TYPE_ITEM = 1  ;
     private LayoutInflater inflater;
     private Context context;
+    private AQuery aq;
 
 
     public AdapterDrawer(Context context, List<Information> data){
         this.context=context;
         this.inflater= LayoutInflater.from(context);
         this.data=data;
+        this.aq= new AQuery(context);
     }
 
 
@@ -57,7 +60,7 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             username.setText(admin.getNom() +" "+ admin.getPrenom());
             email.setText(admin.getEmail());
-            imageProfile.setImageBitmap(admin.getImg());
+            aq.id(imageProfile).image(admin.getImg());
 
 
             HeaderHolder holder = new HeaderHolder(view);

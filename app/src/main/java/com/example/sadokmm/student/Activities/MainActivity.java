@@ -1,39 +1,43 @@
 package com.example.sadokmm.student.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.ImageRequest;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
-import com.example.sadokmm.student.Adapters.MainRvAdapter;
-import com.example.sadokmm.student.Adapters.PageAdapterFirst;
 import com.example.sadokmm.student.Adapters.PageAdapterMain;
-import com.example.sadokmm.student.Adapters.PostAdapter;
 import com.example.sadokmm.student.Fragments.NavigationDrawerFragment;
+import com.example.sadokmm.student.Fragments.TimeFragment;
 import com.example.sadokmm.student.Objects.Emploi;
-import com.example.sadokmm.student.Objects.Groupe;
 import com.example.sadokmm.student.Objects.Info;
 import com.example.sadokmm.student.Objects.Jour;
-import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.Objects.Seance;
+import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
 import com.google.gson.Gson;
 //import com.google.gson.Gson;
@@ -50,8 +54,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.sadokmm.student.Activities.firstActivity.EMPLOI_FILE;
+import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
+import static com.example.sadokmm.student.Fragments.TimeFragment.afficheBtn;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -68,18 +76,23 @@ public class MainActivity extends AppCompatActivity {
     public static Date laDate;
     public static int jourNum;
     public static Seance seanceActuelle,seanceVide,weekend;
-    public static Emploi monEmploi;
+    //public static Emploi monEmploi;
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PageAdapterMain pageAdapter;
 
-    public static final String MY_SP_FILE = "com.example.sadokmm.student.activities.monemploi";
+    ProgressDialog prgDialog;
+
+    private RequestQueue requestQueue;
+
+    //public static final String MY_SP_FILE = "com.example.sadokmm.student.activities.monemploi";
 
 
     private TextView afficheJournee;
 
-    private ImageView mmm;
+    private TextView mmm;
+
 
 
     final static String LUNDI = "lundi/monday/lun./mon.";
@@ -99,7 +112,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         aq = new AQuery(this);
+        requestQueue = Volley.newRequestQueue(this);
+        setUpFab();
+        //chargerMonEmploi();
 
+        Toast.makeText(this, "dddd", Toast.LENGTH_LONG).show();
 
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
@@ -109,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout=(TabLayout)findViewById(R.id.tabLayoutMain);
         viewPager=(ViewPager) findViewById(R.id.viewPagerMain);
+
+        afficheJournee = (TextView) findViewById(R.id.afficheJournee);
 
         tabLayout.addTab(tabLayout.newTab().setText(""));
         tabLayout.addTab(tabLayout.newTab().setText(""));
@@ -133,9 +152,13 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()) {
 
 
-            Toast.makeText(this,"Connecté ! ",Toast.LENGTH_SHORT).show();
+           /* Toast.makeText(this,"Connecté ! ",Toast.LENGTH_SHORT).show();
 
-            chargerMonEmploi();
+            String type = getIntent().getExtras().getString("type");
+            if (type.equals("register")){
+               // chargerUserFromRegister(getIntent().getExtras().getString("email"),getIntent().getExtras().getString("pass"));
+            }
+            //chargerMonEmploi();*/
 
         }
 
@@ -144,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"non connecté !",Toast.LENGTH_SHORT).show();
 
 
-            SharedPreferences sp=getSharedPreferences("monemploi",MODE_PRIVATE);
+            SharedPreferences sp=getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE);
             String monemploi = sp.getString("emploi","a");
 
             if (monemploi.equals("a")) {
@@ -159,14 +182,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-
+            //chargerMonEmploi();
         }
 
 
-        afficheJournee = (TextView) findViewById(R.id.afficheJournee);
+
+
+
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+
+
+    }
 
     public void chargerMonEmploi() {
 
@@ -174,17 +205,131 @@ public class MainActivity extends AppCompatActivity {
         int niveau = admin.getNiveau();
         int groupe = admin.getGroupe();
 
-        String url = publicUrl + "getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        Toast.makeText(this,url,Toast.LENGTH_LONG).show();
+
+        prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Connexion en cours ...");
+        prgDialog.setIndeterminate(false);
+        //prgDialog.setMax(100);
+        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        prgDialog.setCancelable(false);
+        prgDialog.show();
+
 
 //        Snackbar.make(getCurrentFocus(),url,Snackbar.LENGTH_LONG).show();
 
-        aq.ajax(url, JSONObject.class, this, "chEmp");
+        JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject myObject) {
+
+
+                Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_LONG).show();
+
+                try {
+
+                    //JSONArray jsonArray = jsonObject.getJSONArray("data");
+                    //JSONObject myObject = jsonArray.getJSONObject(0);
+
+
+                    String id = myObject.getString("_id");
+                    String maFiliere = myObject.getString("filiere");
+                    int niveau = Integer.parseInt(myObject.getString("niveau"));
+                    int groupe = Integer.parseInt(myObject.getString("groupe"));
+
+                    monEmploi = new Emploi(id, maFiliere, niveau, groupe);
+
+                   // Toast.makeText(getApplicationContext(), "sna3t groupe", Toast.LENGTH_LONG).show();
+
+                    JSONArray joursArray = myObject.getJSONArray("jours");
+
+                    //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
+
+                    String nomJour;
+
+                    /*prgDialog = new ProgressDialog(getApplicationContext());
+                    prgDialog.setMessage("Connexion en cours ...");
+                    prgDialog.setIndeterminate(false);
+                    //prgDialog.setMax(100);
+                    prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    prgDialog.setCancelable(false);
+                    prgDialog.show();*/
+
+                    JSONArray seanceArray;
+                    for (int i = 0; i < joursArray.length(); i++) {
+                        nomJour = joursArray.getJSONObject(i).getString("nom");
+                        Jour jj = new Jour(nomJour);
+                        seanceArray = joursArray.getJSONObject(i).getJSONArray("seances");
+
+                        for (int j = 0; j < seanceArray.length(); j++) {
+                            JSONObject seance = seanceArray.getJSONObject(j);
+                            String matiere = seance.getString("mat");
+                            String enseignant = seance.getString("enseignant");
+                            String salle = seance.getString("salle");
+                            int numSeance = Integer.parseInt(seance.getString("numseance"));
+                            String type = seance.getString("type");
+                            String pqn= seance.getString("pq");
+                            Boolean pq;
+                            if (pqn.equals("false"))
+                                pq = false ;
+                            else pq=true;
+
+                        /*if (seance.getString("parQuinzaine").equals("false"))
+                            pq = false;
+                        else
+                            pq = true;*/
+                            if (!(matiere.equals(""))) {
+                                Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
+                                jj.getListSeance().add(s);
+                            };
+
+                        }
+                        monEmploi.getJours().add(jj);
+                        //Toast.makeText(getApplicationContext(), "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
+                       // prgDialog.dismiss();
+
+                    }
+
+                    //Enregistrer une copie local de l'emploi sur le téléphone
+                    Gson gson = new Gson();
+                    String monEmploiEnJson = gson.toJson(monEmploi);
+
+                    SharedPreferences.Editor editor=getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+                    editor.putString("emploi",monEmploiEnJson);
+                    editor.commit();
+
+                    prgDialog.dismiss();
+
+
+
+                    Toast.makeText(getApplicationContext(),monEmploiEnJson,Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+
+                    Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+               // Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
 
     }
 
 
     public void chEmp(String url, JSONObject myObject, AjaxStatus status) {
 
+
+        SharedPreferences.Editor editor2=getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+        editor2.clear();
+        editor2.commit();
 
         if (myObject != null)
 
@@ -213,6 +358,14 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
 
                 String nomJour;
+
+                prgDialog = new ProgressDialog(this);
+                prgDialog.setMessage("Connexion en cours ...");
+                prgDialog.setIndeterminate(false);
+                //prgDialog.setMax(100);
+                prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                prgDialog.setCancelable(true);
+                prgDialog.show();
 
                 JSONArray seanceArray;
                 for (int i = 0; i < joursArray.length(); i++) {
@@ -245,13 +398,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     monEmploi.getJours().add(jj);
                     Toast.makeText(this, "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
+                    prgDialog.dismiss();
+
                 }
 
               //Enregistrer une copie local de l'emploi sur le téléphone
                 Gson gson = new Gson();
                 String monEmploiEnJson = gson.toJson(monEmploi);
 
-                SharedPreferences.Editor editor=getSharedPreferences("monemploi",Context.MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor=getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
                 editor.putString("emploi",monEmploiEnJson);
                 editor.commit();
 
@@ -428,5 +583,119 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+    //SETUP the FAB
+    private void setUpFab(){
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Snackbar.make(view, "Hello", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent intent = new Intent(getApplicationContext(),AjoutPost.class);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+
+
+    //download img using volley
+        public void dimg(String url) {
+            // Initialize a new RequestQueue instance
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+            // Initialize a new ImageRequest
+            ImageRequest imageRequest = new ImageRequest(url,getResources(),getContentResolver(),new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap response) {
+                    //mmm.setImageBitmap(response);
+                }
+            },0,0, ImageView.ScaleType.CENTER_CROP,Bitmap.Config.RGB_565,new Response.ErrorListener(){
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_LONG).show();
+                }
+            });
+
+
+            // Add ImageRequest to the RequestQueue
+            requestQueue.add(imageRequest);
+        }
+
+
+        public void chargerUserFromRegister(String emailusr , String pass){
+
+            String url = publicUrl + "student/getuser/"+emailusr;
+
+            prgDialog = new ProgressDialog(this);
+            prgDialog.setMessage("Connexion en cours ...");
+            prgDialog.setIndeterminate(false);
+            //prgDialog.setMax(100);
+            prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            prgDialog.setCancelable(false);
+            prgDialog.show();
+
+            JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+
+                    String id = null, email = null, nom = null, prenom = null, filiere = null, mdp = null, imgUrl = null;
+                    int niveau = 0, groupe = 0;
+
+
+                    try {
+                        id = jsonObject.getString("_id");
+                        nom = jsonObject.getString("nom");
+                        prenom = jsonObject.getString("prenom");
+                        filiere = jsonObject.getString("filiere");
+                        imgUrl = publicUrl + jsonObject.getString("img");
+                        email = jsonObject.getString("email");
+                        niveau = Integer.parseInt(jsonObject.getString("niveau"));
+                        groupe = Integer.parseInt(jsonObject.getString("groupe"));
+                        admin = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
+
+                        SharedPreferences.Editor editor=getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
+                        editor.putBoolean("statut",true);
+                        editor.putString("email",admin.getEmail());
+                        editor.putString("prenom",admin.getPrenom());
+                        editor.putString("nom" , admin.getNom());
+                        editor.putString("filiere" , admin.getFiliere());
+                        editor.putString("img",admin.getImg());
+                        editor.putInt("groupe",admin.getGroupe());
+                        editor.putInt("niveau",admin.getNiveau());
+                        editor.commit();
+
+                        prgDialog.dismiss();
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+
+            requestQueue.add(jsonObjectRequest);
+
+            //return user;
+
+        }
+
+
+
+
+
+
 
 }

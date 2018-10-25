@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.CommentaireActivity"
+    android:orientation="vertical">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/textInputLay"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+
+            >
+
+            <EditText
+                android:id="@+id/commentPostText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Votre commentaire"/>
+
+
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/insertComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="23dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_send" />
+
+    </RelativeLayout>
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/commRV"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+
+
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>

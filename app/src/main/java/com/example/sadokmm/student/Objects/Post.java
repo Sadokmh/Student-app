@@ -9,35 +9,19 @@ import java.util.Date;
 
 public class Post {
 
-    private String nom;
-    private String prenom;
-    private String filiere;
-    private int niveau;
-    private Bitmap imgUsr;
-    private Bitmap imgPost;
-    private String textPost;
-    private String date;
+    private String id;
+    private String txtpost;
+    private String emailusr;
+    private String imgpost;
+    private String datepost;
 
 
-    public Post(String nom, String prenom, String filiere, int niveau, Bitmap imgUsr, Bitmap imgPost, String textPost) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.filiere = filiere.toUpperCase();
-        this.niveau = niveau;
-        this.imgUsr = imgUsr;
-        this.imgPost = imgPost;
-        this.textPost = textPost;
-        this.date = getStringDate(Calendar.getInstance().getTime());
-    }
-
-
-
-    public String getNomComplet() {
-        return this.prenom + " " + this.nom;
-    }
-
-    public String getFiliereEtNiveau(){
-        return this.niveau + this.filiere;
+    public Post(String txtpost, String emailusr, String imgpost , String id) {
+        this.id = id;
+        this.txtpost = txtpost;
+        this.emailusr = emailusr;
+        this.imgpost = imgpost;
+        this.datepost = getStringDate(Calendar.getInstance().getTime());
     }
 
     private String getStringDate(Date dateNow) {
@@ -47,72 +31,43 @@ public class Post {
     }
 
 
-    public String getNom() {
-        return nom;
+    public String getTxtpost() {
+        return txtpost;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setTxtpost(String txtpost) {
+        this.txtpost = txtpost;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public String getEmailusr() {
+        return emailusr;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public void setEmailusr(String emailusr) {
+        this.emailusr = emailusr;
     }
 
-    public String getFiliere() {
-        return filiere;
+    public String getImgpost() {
+        return imgpost;
     }
 
-    public void setFiliere(String filiere) {
-        this.filiere = filiere;
+    public void setImgpost(String imgpost) {
+        this.imgpost = imgpost;
     }
 
-    public int getNiveau() {
-        return niveau;
+    public String getDatepost() {
+        return datepost;
     }
 
-    public void setNiveau(int niveau) {
-        this.niveau = niveau;
+    public void setDatepost(String datepost) {
+        this.datepost = datepost;
     }
 
-    public Bitmap getImgUsr() {
-        return imgUsr;
+    public String getId() {
+        return id;
     }
 
-    public void setImgUsr(Bitmap imgUsr) {
-        this.imgUsr = imgUsr;
+    public void setId(String id) {
+        this.id = id;
     }
-
-    public Bitmap getImgPost() {
-        return imgPost;
-    }
-
-    public void setImgPost(Bitmap imgPost) {
-        this.imgPost = imgPost;
-    }
-
-    public String getTextPost() {
-        return textPost;
-    }
-
-    public void setTextPost(String textPost) {
-        this.textPost = textPost;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-
-
-
-
 }

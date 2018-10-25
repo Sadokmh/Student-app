@@ -24,6 +24,8 @@ import com.example.sadokmm.student.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
+
 public class NavigationDrawerFragment extends Fragment  {
 
     private View containerView;
@@ -100,7 +102,7 @@ public class NavigationDrawerFragment extends Fragment  {
                         break;
                     }
                     case 4 : {
-                        SharedPreferences.Editor editor=getActivity().getSharedPreferences("user",Context.MODE_PRIVATE).edit();
+                        SharedPreferences.Editor editor=getActivity().getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
                         editor.clear();
                         editor.commit();
                         getActivity().finish();

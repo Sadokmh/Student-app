@@ -18,12 +18,14 @@ import com.example.sadokmm.student.R;
 
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
-import static com.example.sadokmm.student.Activities.MainActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceActuelle;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceVide;
+import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 
 public class TimeFragment extends Fragment {
 
+
+    public static TextView afficheBtn;
 
     public TimeFragment() {
 
@@ -60,7 +62,7 @@ public class TimeFragment extends Fragment {
 
         TextView numSeance, matiere, enseignant, salle, parQuinzaine, type, sTime;
         LinearLayout parQuinzaineLayout, actuelle, coursLayout, profLayout, salleLayout;
-        TextView afficheBtn;
+
 
         numSeance = (TextView) view.findViewById(R.id.numSeance);
         matiere = (TextView) view.findViewById(R.id.matiere);
@@ -79,12 +81,18 @@ public class TimeFragment extends Fragment {
         afficheBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), AfficheJournee.class);
-                startActivity(intent) ;
+                try {
+                    Intent intent = new Intent(getActivity(), AfficheJournee.class);
+                    startActivity(intent);
+                }
+                catch (Exception e) {
+                    afficheBtn.setText(e.toString());
+                }
             }
         });
 
         if (currentSession != 0) {
+
             if (jourNum == 0) {
 
                 for (int i = 0; i < monEmploi.getJours().get(0).getListSeance().size(); i++) {
@@ -131,14 +139,14 @@ public class TimeFragment extends Fragment {
 
                     }
                 }
-            } else if (jourNum == 5) {
+            } /*else if (jourNum == 5) {
 
                 for (int i = 0; i < monEmploi.getJours().get(5).getListSeance().size(); i++) {
                     if (monEmploi.getJours().get(5).getListSeance().get(i).getNumSeance() == currentSession) {
                         seanceActuelle = (monEmploi.getJours().get(5).getListSeance().get(i));
                     }
                 }
-            }
+            }*/
         }
 
         else {
