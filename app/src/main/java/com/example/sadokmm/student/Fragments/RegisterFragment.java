@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,6 +52,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -64,6 +68,7 @@ import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 import static com.example.sadokmm.student.Activities.firstActivity.EMPLOI_FILE;
 import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.listUser;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
@@ -219,7 +224,18 @@ public class RegisterFragment extends Fragment {
                     editor.putString("connectUser",emailtxt);
                     editor.commit();
 
-                    postUser(nomtxt,prenomtxt,emailtxt,passtxt,filieretxt,String.valueOf(niveauFil),String.valueOf(groupe));
+                    try {
+                        prgDialog = new ProgressDialog(getContext());
+                        prgDialog.setMessage("Connexion en cours ...");
+                        prgDialog.setIndeterminate(false);
+                        //prgDialog.setMax(100);
+                        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        prgDialog.setCancelable(true);
+                        prgDialog.show();
+                        postUser(nomtxt,prenomtxt,emailtxt,passtxt,filieretxt,String.valueOf(niveauFil),String.valueOf(groupe));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                     /**/
 
@@ -242,7 +258,7 @@ public class RegisterFragment extends Fragment {
 
     private void selectImage() {
 
-        final String[] items = {"Camera", "Gallerie"};
+        final String[] items = {"Camera", "Galerie"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Choisir le source: ");
@@ -288,27 +304,21 @@ public class RegisterFragment extends Fragment {
             case OPENCAM_CODE:
                 if (resultCode == RESULT_OK) {
                     Bundle extras = data.getExtras();
-                    myNewImage = (Bitmap)extras.get("data");
+                    myNewImage = getResizedBitmap((Bitmap)extras.get("data"),500);
                     photo.setImageBitmap(myNewImage);
-                    filepath = data.getData();
+                    //filepath = data.getData();
                 }
 
                 break;
             case OPENGALLERY_CODE:
                 if (resultCode == RESULT_OK) {
-                    Uri dat= data.getData();
 
-                    try {
-                        myNewImage =  MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), dat);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 2;
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 2;
 
-                        myNewImage = ImageUtils.decodeStream(getActivity().getContentResolver(),data.getData(),options);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    myNewImage = getResizedBitmap(ImageUtils.decodeStream(getActivity().getContentResolver(),data.getData(),options),500);
                     photo.setImageBitmap(myNewImage);
-                    filepath= data.getData();
+                    //filepath= data.getData();
                 }
                 break;
         }
@@ -518,12 +528,13 @@ public class RegisterFragment extends Fragment {
 
 
 
-            public void postUser(String nom , String prenom , String email , String pass , String filiere , String niveau , String groupe){
+            public void postUser(String nom , String prenom , final String email , String pass , final String filiere , final String niveau , final String groupe) throws FileNotFoundException {
                 SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl+"student/u",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
                                 Log.d("Response", response);
+                                chargerMonEmploi(filiere,Integer.parseInt(niveau),Integer.parseInt(groupe),email);
                                 Toast.makeText(getActivity(), "Okey", Toast.LENGTH_LONG).show();
                             }
                         }, new Response.ErrorListener() {
@@ -539,12 +550,12 @@ public class RegisterFragment extends Fragment {
                 smr.addStringParam("filiere", filiere);
                 smr.addStringParam("niveau", niveau);
                 smr.addStringParam("groupe", groupe);
-                smr.addFile("img", getPath(filepath));
+                smr.addFile("img", saveImage(myNewImage,"user"));
 
                 RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
                 mRequestQueue.add(smr);
 
-                chargerMonEmploi(filiere,Integer.parseInt(niveau),Integer.parseInt(groupe),email);
+
 
                 //admin=new User("0",nom,prenom,email,pass,myNewImage,filiere,Integer.parseInt(groupe),Integer.parseInt(niveau));
 
@@ -563,13 +574,13 @@ public class RegisterFragment extends Fragment {
         //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
         Toast.makeText(getContext(),url,Toast.LENGTH_LONG).show();
 
-        prgDialog = new ProgressDialog(getContext());
+        /*prgDialog = new ProgressDialog(getContext());
         prgDialog.setMessage("chargement en cours ...");
         prgDialog.setIndeterminate(false);
         //prgDialog.setMax(100);
         prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         prgDialog.setCancelable(false);
-        prgDialog.show();
+        prgDialog.show();*/
 
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -631,7 +642,7 @@ public class RegisterFragment extends Fragment {
 
                     chargerUser(mail);
 
-                    prgDialog.dismiss();
+                    //prgDialog.dismiss();
 
 
 
@@ -663,13 +674,13 @@ public class RegisterFragment extends Fragment {
 
         String url = publicUrl + "student/getuser/"+emailusr;
 
-        prgDialog = new ProgressDialog(getContext());
+        /*prgDialog = new ProgressDialog(getContext());
         prgDialog.setMessage("Connexion en cours ...");
         prgDialog.setIndeterminate(false);
         //prgDialog.setMax(100);
         prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         prgDialog.setCancelable(false);
-        prgDialog.show();
+        prgDialog.show();*/
 
         Toast.makeText(getContext(),"chercheusr",Toast.LENGTH_LONG).show();
 
@@ -732,6 +743,34 @@ public class RegisterFragment extends Fragment {
         requestQueue.add(jsonObjectRequest);
 
         //return user;
+
+    }
+
+
+    private String saveImage(Bitmap bmp, String filename) throws FileNotFoundException {
+
+
+
+
+        String file_path = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/Student";
+        File dir = new File(file_path);
+        if(!dir.exists())
+            dir.mkdirs();
+        File file = new File(dir, "user-" + filename + ".png");
+        FileOutputStream fOut = new FileOutputStream(file);
+
+        bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+        try {
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String filePath = file.getPath();
+
+        return filePath;
 
     }
 

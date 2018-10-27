@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
@@ -29,6 +31,7 @@ import com.android.volley.request.ImageRequest;
 import com.android.volley.request.JsonArrayRequest;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.JsonRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
@@ -39,6 +42,7 @@ import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +54,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
@@ -65,10 +70,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
     ProgressDialog prgDialog;
 
-    private User user;
-    //private String nom,prenom,email,mdp,filiere,id,imgUrl;
-    //private int niveau,groupe;
-    //private Bitmap imgusr,imgpost;
+
 
 
     public PostAdapter(Context context) {
@@ -98,48 +100,44 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
 
 
-
         chercherUserByEmailAndCreatePost(i,viewHolder);
 
-
-
-
-
-
-        /*viewHolder.profilName.setText(postUser.getPrenom() + " " + postUser.getNom());
-        viewHolder.filiere.setText(postUser.getNiveau() + postUser.getFiliere());
-        viewHolder.datePost.setText(post.getDatepost());
-        viewHolder.textPost.setText(post.getTxtpost());
-        viewHolder.imgUsr.setImageBitmap(postUser.getImg());
-        viewHolder.imgPost.setImageBitmap(post.getImgpost());*/
-
-
-
-
-
+        /*if (userlike(i)) {
+            viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
+        }*/
 
 
     }
+
+
+
 
     @Override
     public int getItemCount() {
         return myListPost.size();
     }
 
+
+
     public void setMyList(List<Post> list){
         myListPost=list;
         notifyItemRangeChanged(0,list.size());
     }
 
+
+
     public List<Post> getMyListPost() {
         return myListPost;
     }
+
+
+
 
     //
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView profilName,filiere,textPost,datePost;
+        private TextView profilName,filiere,textPost,datePost,nbLikesView;
         private ImageView imgPost,likePost,commentPost;
         private CircleImageView imgUsr;
         private EditText textComm;
@@ -157,6 +155,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
             likePost=(ImageView) itemView.findViewById(R.id.likePostButton);
              imgUsr=(CircleImageView) itemView.findViewById(R.id.profileImg);
             textComm = (EditText) itemView.findViewById(R.id.commentPostText);
+            nbLikesView = (TextView) itemView.findViewById(R.id.nbLikes);
             //salleLayout=(LinearLayout)itemView.findViewById(R.id.salleLayout);
             //profLayout=(LinearLayout)itemView.findViewById(R.id.profLayout);
             //coursLayout=(LinearLayout)itemView.findViewById(R.id.coursLayout);
@@ -219,10 +218,46 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                         }
                     });
 
+
+
+                    viewHolder.nbLikesView.setText(myListPost.get(i).getListLikes().size()+" personnes");
+
+
+                    viewHolder.likePost.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String textNbLikes;
+                            if (!myListPost.get(i).userlike()) {
+                                likePost(myListPost.get(i).getId() , i);
+                                viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
+
+                                if (myListPost.get(i).getListLikes().size() > 0 )
+                                textNbLikes = "Vous et " + myListPost.get(i).getListLikes().size()+" autres personnes";
+                                else textNbLikes = "1 Vous aimez ça" ;
+
+                                viewHolder.nbLikesView.setText(textNbLikes);
+
+
+                            }
+                            else {
+                                unlikePost(myListPost.get(i).getId() , i);
+                                viewHolder.likePost.setImageResource(R.drawable.ic_like_not_clicked);
+
+                                //if (myListPost.get(i).)
+                                viewHolder.nbLikesView.setText( (myListPost.get(i).getListLikes().size() - 1)+"  personnes");
+                            }
+
+                        }
+                    });
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+
+                if (myListPost.get(i).userlike()) {
+                    viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
+                }
 
             }
         }, new Response.ErrorListener() {
@@ -231,6 +266,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
             }
         });
+
+
+        if (isNetworkAvailable())
+            requestQueue.getCache().clear();
 
         requestQueue.add(jsonObjectRequest);
 
@@ -243,31 +282,80 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
 
 
-    //download img using volley
-    public Bitmap getImageByUrl(String url) {
-        // Initialize a new RequestQueue instance
-        RequestQueue requestQueue = Volley.newRequestQueue(layoutInflater.getContext());
-        final Bitmap[] im = new Bitmap[1];
 
-        // Initialize a new ImageRequest
-        ImageRequest imageRequest = new ImageRequest(url,layoutInflater.getContext().getResources(),layoutInflater.getContext().getContentResolver(),new Response.Listener<Bitmap>() {
+
+
+    public void likePost(String idpost, final int position) {
+
+        String url = publicUrl + "student/like/" + idpost + "/" + admin.getEmail();
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(Bitmap response) {
-                im[0] = response;
+            public void onResponse(String response) {
+                Toast.makeText(layoutInflater.getContext(),"like ajouté",Toast.LENGTH_LONG).show();
+                myListPost.get(position).chargerLikes();
+
+
             }
-        },0,0, ImageView.ScaleType.CENTER_CROP,Bitmap.Config.RGB_565,new Response.ErrorListener(){
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(layoutInflater.getContext(),error.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(layoutInflater.getContext(),"erreur like ",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        if (isNetworkAvailable())
+            requestQueue.getCache().clear();
+
+        requestQueue.add(stringRequest);
+
+    }
+
+
+
+    public void unlikePost(String idpost , final int position){
+
+        String url = publicUrl + "student/likeremove/" + idpost + "/" + admin.getEmail();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(layoutInflater.getContext(),"like supprimé",Toast.LENGTH_LONG).show();
+                myListPost.get(position).chargerLikes();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(layoutInflater.getContext(),"erreur supp like",Toast.LENGTH_LONG).show();
             }
         });
 
 
-        // Add ImageRequest to the RequestQueue
-        requestQueue.add(imageRequest);
-        return im[0];
+        if (isNetworkAvailable())
+            requestQueue.getCache().clear();
+
+        requestQueue.add(stringRequest);
+
     }
 
+
+
+
+
+
+
+
+
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) layoutInflater.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+
+    }
 
 
 }

@@ -1,12 +1,16 @@
 package com.example.sadokmm.student.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.CacheDispatcher;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -37,13 +43,16 @@ import java.util.ArrayList;
 import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
-public class PostFragment extends Fragment {
+public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView postRv;
     private PostAdapter postAdapter;
     ArrayList<Post> ll;
     ProgressDialog prgDialog;
+
+    private RequestQueue requestQueue;
+
 
     public PostFragment() {
     }
@@ -59,15 +68,21 @@ public class PostFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_post, container, false);
 
+        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipePost);
+        swipeRefreshLayout.setOnRefreshListener(this);
         postRv = (RecyclerView) view.findViewById(R.id.postRV);
         postAdapter = new PostAdapter(getActivity());
+        requestQueue = Volley.newRequestQueue(getActivity());
 
         ll = new ArrayList<>();
+        postAdapter.setMyList(ll);
         charger(0, 0);
 
         //postAdapter.setMyList(ll);
         postRv.setLayoutManager(new LinearLayoutManager(getActivity()));
         postRv.setAdapter(postAdapter);
+
+
 
 
         return view;
@@ -82,15 +97,17 @@ public class PostFragment extends Fragment {
 
     public void charger(int deb, int fin) {
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
 
+        //RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
 
         String url = publicUrl + "student/postg/";
+
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
+                            if (ll.size() != 0 ) ll.clear();
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject postJson = response.getJSONObject(i);
                                 String id , txtpost, datepost, emailusr, imgpost;
@@ -101,16 +118,16 @@ public class PostFragment extends Fragment {
                                 imgpost = postJson.getString("imgpost");
 
                                 //getImageByUrl(publicUrl + imgpost, i);
-                                Post p = new Post(txtpost, emailusr, imgpost , id);
+                                Post p = new Post(txtpost, emailusr, imgpost , id , getContext());
                                 p.setDatepost(datepost);
-                                ll.add(p);
-                                postAdapter.getMyListPost().add(p);
-                                postAdapter.notifyDataSetChanged();
+                                ll.add(0,p);
 
-                                //Toast.makeText(getContext(), "gggoeg", Toast.LENGTH_LONG).show();
-                                //prgDialog.done();
+
 
                             }
+                            postAdapter.setMyList(ll);
+                            postAdapter.notifyDataSetChanged();
+                            //Toast.makeText(getContext(),,Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
@@ -126,6 +143,7 @@ public class PostFragment extends Fragment {
             }
         });
 
+        //requestQueue.getCache().clear();
         requestQueue.add(jsonArrayRequest);
 
     }
@@ -166,8 +184,34 @@ public class PostFragment extends Fragment {
 
 
         // Add ImageRequest to the RequestQueue
+        //requestQueue.getCache().clear();
         requestQueue.add(imageRequest);
 
+
+    }
+
+    @Override
+    public void onRefresh() {
+
+        if (isNetworkAvailable()) {
+            requestQueue.getCache().clear();
+            charger(0,0);
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        else {
+            Toast.makeText(getActivity(),"Pas de connexion internet",Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 
     }
 }

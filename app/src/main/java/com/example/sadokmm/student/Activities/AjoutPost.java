@@ -1,6 +1,7 @@
 package com.example.sadokmm.student.Activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -29,9 +31,14 @@ import com.android.volley.toolbox.Volley;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class AjoutPost extends AppCompatActivity {
@@ -45,6 +52,11 @@ public class AjoutPost extends AppCompatActivity {
     final static int OPENCAM_CODE = 22;
     final static int OPENGALLERY_CODE = 23;
     private Uri filepath;
+
+    private String fileePath;
+
+    ProgressDialog prgDialog ;
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -78,13 +90,20 @@ public class AjoutPost extends AppCompatActivity {
 
     }
 
-    public void publierBtn(View view) {
+    public void publierBtn(View view) throws FileNotFoundException {
 
         if (txtPost.getText().toString().length() < 8) {
             Snackbar.make(view, "Veuiller saisir au moins 8 caractères !", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else {
-            Post post = new Post(txtPost.getText().toString(), admin.getEmail(), filepath.toString() , "");
+            prgDialog = new ProgressDialog(this);
+            prgDialog.setMessage("chargement en cours ...");
+            prgDialog.setIndeterminate(false);
+            //prgDialog.setMax(100);
+            prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            prgDialog.setCancelable(true);
+            prgDialog.show();
+            Post post = new Post(txtPost.getText().toString(), admin.getEmail(), saveImage(myNewImage, "ffff") , "" , this);
             postPub(post.getTxtpost(), post.getEmailusr(), post.getDatepost());
         }
 
@@ -95,7 +114,7 @@ public class AjoutPost extends AppCompatActivity {
 
     private void selectImage() {
 
-        final String[] items = {"Camera", "Gallerie"};
+        final String[] items = {"Camera", "Galerie"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choisir le source: ");
@@ -141,27 +160,20 @@ public class AjoutPost extends AppCompatActivity {
             case OPENCAM_CODE:
                 if (resultCode == RESULT_OK) {
                     Bundle extras = data.getExtras();
-                    myNewImage = (Bitmap) extras.get("data");
+                    myNewImage = getResizedBitmap((Bitmap)extras.get("data"),500);
                     imgShow.setImageBitmap(myNewImage);
-                    filepath = data.getData();
                 }
 
                 break;
             case OPENGALLERY_CODE:
                 if (resultCode == RESULT_OK) {
-                    Uri dat = data.getData();
 
-                    try {
-                        myNewImage = MediaStore.Images.Media.getBitmap(getContentResolver(), dat);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 2;
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 2;
 
-                        myNewImage = ImageUtils.decodeStream(getContentResolver(), data.getData(), options);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    myNewImage = getResizedBitmap(ImageUtils.decodeStream(getContentResolver(),data.getData(),options),500);
                     imgShow.setImageBitmap(myNewImage);
-                    filepath = data.getData();
+
                 }
                 break;
         }
@@ -191,31 +203,88 @@ public class AjoutPost extends AppCompatActivity {
     }
 
 
-    public void postPub(String txtpost, String emailusr, String datepost) {
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl + "student/postp",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("Response", response);
-                        Toast.makeText(getApplicationContext(), "Okey", Toast.LENGTH_LONG).show();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-        smr.addStringParam("txtpost", txtpost);
-        smr.addStringParam("emailusr", emailusr);
-        smr.addStringParam("datepost", datepost);
+    public void postPub(String txtpost, String emailusr, String datepost) throws FileNotFoundException {
+        try {
+            SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl + "student/postp",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("Response", response);
+
+                            prgDialog.dismiss();
+
+                            Toast.makeText(getApplicationContext(), "Okey", Toast.LENGTH_LONG).show();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    prgDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
 
 
-        if (filepath != null)
-            smr.addFile("imgpost", getPath(filepath));
+            smr.addStringParam("txtpost", txtpost);
+            smr.addStringParam("emailusr", emailusr);
+            smr.addStringParam("datepost", datepost);
 
-        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
-        mRequestQueue.add(smr);
 
+            smr.addFile("imgpost", fileePath);
+
+            RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+            mRequestQueue.add(smr);
+        }
+        catch (Exception e) {
+            txtPost.setText(e.toString());
+        }
 
     }
+
+    public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+
+
+    private String saveImage(Bitmap bmp, String filename) throws FileNotFoundException {
+
+
+
+
+        String file_path = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/Student";
+        File dir = new File(file_path);
+        if(!dir.exists())
+            dir.mkdirs();
+        File file = new File(dir, "Students-" + filename + ".png");
+        FileOutputStream fOut = new FileOutputStream(file);
+
+        bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+        try {
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String filePath = file.getPath();
+        fileePath = filePath;
+
+
+        return filePath;
+
+    }
+
 }

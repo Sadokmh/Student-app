@@ -119,6 +119,14 @@
             android:layout_marginBottom="8dp"
             android:src="@drawable/ic_like_not_clicked" />
 
+
+        <TextView
+            android:id="@+id/nbLikes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="20" />
+
         <ImageView
             android:id="@+id/commentPostButton"
             android:layout_width="53dp"

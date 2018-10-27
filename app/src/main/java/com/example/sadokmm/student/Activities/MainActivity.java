@@ -589,12 +589,12 @@ public class MainActivity extends AppCompatActivity {
     private void setUpFab(){
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        //fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Hello", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
                 Intent intent = new Intent(getApplicationContext(),AjoutPost.class);
+
                 startActivity(intent);
             }
         });
