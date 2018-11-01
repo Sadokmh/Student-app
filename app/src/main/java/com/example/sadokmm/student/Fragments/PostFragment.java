@@ -51,7 +51,7 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     ArrayList<Post> ll;
     ProgressDialog prgDialog;
 
-    private RequestQueue requestQueue;
+    private RequestQueue requestQueuePost;
 
 
     public PostFragment() {
@@ -72,7 +72,7 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         swipeRefreshLayout.setOnRefreshListener(this);
         postRv = (RecyclerView) view.findViewById(R.id.postRV);
         postAdapter = new PostAdapter(getActivity());
-        requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueuePost = Volley.newRequestQueue(getActivity());
 
         ll = new ArrayList<>();
         postAdapter.setMyList(ll);
@@ -143,8 +143,10 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
 
-        //requestQueue.getCache().clear();
-        requestQueue.add(jsonArrayRequest);
+        if (isNetworkAvailable())
+            requestQueuePost.getCache().clear();
+
+        requestQueuePost.add(jsonArrayRequest);
 
     }
 
@@ -194,13 +196,13 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onRefresh() {
 
         if (isNetworkAvailable()) {
-            requestQueue.getCache().clear();
             charger(0,0);
             swipeRefreshLayout.setRefreshing(false);
         }
 
         else {
             Toast.makeText(getActivity(),"Pas de connexion internet",Toast.LENGTH_LONG).show();
+            swipeRefreshLayout.setRefreshing(false);
         }
 
 

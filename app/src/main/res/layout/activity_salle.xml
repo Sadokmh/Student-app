@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#e1e1e1"
+    android:id="@+id/sv">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activities.SalleActivity"
+        android:orientation="vertical"
+        android:background="#e1e1e1"
+        android:id="@+id/ll">
+
+        <include android:id="@+id/app_bar"
+            layout="@layout/app_bar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/imgSalle"
+            android:layout_width="match_parent"
+            android:layout_height="450dp" />
+
+    </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/dialog"
+            android:padding="@dimen/mtrl_btn_icon_btn_padding_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@color/colorPrimary"
+            android:text="Afficher les détails"
+            android:textColor="@color/colorLight"
+            android:textSize="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"/>
+
+
+    </LinearLayout>
+
+</ScrollView>

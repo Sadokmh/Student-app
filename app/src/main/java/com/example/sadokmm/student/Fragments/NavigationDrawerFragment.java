@@ -2,6 +2,7 @@ package com.example.sadokmm.student.Fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Activities.SalleActivity;
 import com.example.sadokmm.student.Adapters.AdapterDrawer;
 import com.example.sadokmm.student.Listeners.RecyclerTouchListener;
 import com.example.sadokmm.student.Objects.Information;
@@ -102,6 +104,13 @@ public class NavigationDrawerFragment extends Fragment  {
                         break;
                     }
                     case 4 : {
+                        Intent intent = new Intent(getContext(), SalleActivity.class);
+                        intent.putExtra("nom_salle","Plan de l'ISGs");
+                        intent.putExtra("nom_salle_correcte","Plan de l'ISGs");
+                        startActivity(intent);
+                        break;
+                    }
+                    case 5 : {
                         SharedPreferences.Editor editor=getActivity().getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
                         editor.clear();
                         editor.commit();
@@ -128,8 +137,8 @@ public class NavigationDrawerFragment extends Fragment  {
 
     public static List<Information> getData(){
         List<Information> data=new ArrayList<>();
-        int[] icons = {R.drawable.ic_home , R.drawable.ic_person , R.drawable.ic_about , R.drawable.ic_logout };
-        String[] titles= {"Acceuil" , "Profile" , "Info" , "Déconnexion" };
+        int[] icons = {R.drawable.ic_home , R.drawable.ic_person , R.drawable.ic_about , R.drawable.ic_map , R.drawable.ic_logout };
+        String[] titles= {"Acceuil" , "Profile" , "Info" , "Plan de l'ISG" , "Déconnexion" };
 
         for (int i=0 ; i<icons.length && i<titles.length ; i++)
         {

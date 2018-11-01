@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".Activities.CommentaireActivity" />
         <activity android:name=".Activities.AjoutPost" />
+        <activity android:name=".Activities.SalleActivity"></activity>
     </application>
 
 </manifest>

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.sadokmm.student.Activities.SalleActivity;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.R;
 
@@ -102,6 +103,34 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
         else {
             viewHolder.parQuinzaineLayout.setVisibility(View.INVISIBLE);
         }
+
+        viewHolder.salle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(layoutInflater.getContext(), SalleActivity.class);
+                String nom_salle = seance.getSalle().toLowerCase();
+
+
+                if (nom_salle.toCharArray()[0] == 'a') {
+                    if (nom_salle.equals("amphi1") || nom_salle.equals("amphi 1"))
+                        nom_salle = "amphi1" ;
+                    else if (nom_salle.equals("amphi2") || nom_salle.equals("amphi 2"))
+                        nom_salle = "amphi2";
+                    else nom_salle = "a" ;
+                }
+                if (nom_salle.toCharArray()[0] == 'b')
+                    nom_salle = "b";
+                if (nom_salle.toCharArray()[0] == 'c')
+                    nom_salle = "c";
+                if (nom_salle.toCharArray()[0] == 'd')
+                    nom_salle = "d";
+
+
+                intent.putExtra("nom_salle",nom_salle);
+                intent.putExtra("nom_salle_correcte",seance.getSalle());
+                layoutInflater.getContext().startActivity(intent);
+            }
+        });
 
 
 

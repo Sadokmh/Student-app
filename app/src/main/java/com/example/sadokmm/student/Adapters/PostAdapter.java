@@ -64,9 +64,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     private List<Post> myListPost;
     private LayoutInflater layoutInflater;
 
-    Context con;
     AQuery aq;
-    RequestQueue requestQueue;
+    RequestQueue requestQueueUserPost,requestQueueLikePost,requestQueueUnlikePost;
 
     ProgressDialog prgDialog;
 
@@ -77,7 +76,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         layoutInflater=LayoutInflater.from(context);
         myListPost=new ArrayList<>();
         aq=new AQuery(context);
-        requestQueue = Volley.newRequestQueue(layoutInflater.getContext());
+        requestQueueUserPost = Volley.newRequestQueue(layoutInflater.getContext());
+        requestQueueLikePost = Volley.newRequestQueue(layoutInflater.getContext());
+        requestQueueUnlikePost = Volley.newRequestQueue(layoutInflater.getContext());
 
 
 
@@ -258,6 +259,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                 if (myListPost.get(i).userlike()) {
                     viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
                 }
+                else {
+                    viewHolder.likePost.setImageResource(R.drawable.ic_like_not_clicked);
+                }
 
             }
         }, new Response.ErrorListener() {
@@ -268,10 +272,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         });
 
 
-        if (isNetworkAvailable())
-            requestQueue.getCache().clear();
+       /* if (isNetworkAvailable())
+            requestQueueUserPost.getCache().clear();*/
 
-        requestQueue.add(jsonObjectRequest);
+        requestQueueUserPost.add(jsonObjectRequest);
 
         //return user;
 
@@ -305,10 +309,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
             }
         });
 
-        if (isNetworkAvailable())
-            requestQueue.getCache().clear();
+        /*if (isNetworkAvailable())
+            requestQueueLikePost.getCache().clear();*/
 
-        requestQueue.add(stringRequest);
+        requestQueueLikePost.add(stringRequest);
 
     }
 
@@ -333,10 +337,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         });
 
 
-        if (isNetworkAvailable())
-            requestQueue.getCache().clear();
+        /*if (isNetworkAvailable())
+            requestQueueUnlikePost.getCache().clear();*/
 
-        requestQueue.add(stringRequest);
+        requestQueueUnlikePost.add(stringRequest);
 
     }
 

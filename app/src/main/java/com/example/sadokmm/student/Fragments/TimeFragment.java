@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.sadokmm.student.Activities.AfficheJournee;
+import com.example.sadokmm.student.Activities.SalleActivity;
 import com.example.sadokmm.student.R;
 
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
@@ -91,6 +92,10 @@ public class TimeFragment extends Fragment {
             }
         });
 
+
+
+
+
         if (currentSession != 0) {
 
             if (jourNum == 0) {
@@ -164,6 +169,34 @@ public class TimeFragment extends Fragment {
         type.setText(seanceActuelle.getType());
         salle.setText(seanceActuelle.getSalle());
 
+        salle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), SalleActivity.class);
+                String nom_salle = seanceActuelle.getSalle().toLowerCase();
+
+
+                if (nom_salle.toCharArray()[0] == 'a') {
+                    if (nom_salle.equals("amphi1") || nom_salle.equals("amphi 1"))
+                        nom_salle = "amphi1" ;
+                    else if (nom_salle.equals("amphi2") || nom_salle.equals("amphi 2"))
+                        nom_salle = "amphi2";
+                    else nom_salle = "a" ;
+                }
+                if (nom_salle.toCharArray()[0] == 'b')
+                    nom_salle = "b";
+                if (nom_salle.toCharArray()[0] == 'c')
+                    nom_salle = "c";
+                if (nom_salle.toCharArray()[0] == 'd')
+                    nom_salle = "d";
+
+
+                intent.putExtra("nom_salle",nom_salle);
+                intent.putExtra("nom_salle_correcte",seanceActuelle.getSalle());
+                getContext().startActivity(intent);
+            }
+        });
+
 
         if (seanceActuelle.getNumSeance() == 1) {
             numSeance.setText("1ère Séance : ");
@@ -206,6 +239,8 @@ public class TimeFragment extends Fragment {
         //Toast.makeText(this,"hggg" + jourNum,Toast.LENGTH_LONG).show();
 
     }
+
+
 
 
 

@@ -7,6 +7,9 @@
     android:id="@+id/drawerLayout">
 
 
+
+
+
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/coordinator"
@@ -14,6 +17,9 @@
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         >
+
+
+
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_layout"
@@ -63,16 +69,16 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="26dp"
-            android:layout_marginEnd="27dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
             android:background="@color/colorPrimary"
             android:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_create"
             app:rippleColor="@color/colorPrimaryDark" />
+
+
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -89,6 +95,8 @@
 
         android:id="@+id/fragment_navigation_drawer"
         tools:layout="@layout/fragment_naivgation_drawer"/>
+
+
 
 
 
