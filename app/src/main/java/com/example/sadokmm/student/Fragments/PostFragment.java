@@ -110,15 +110,19 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             if (ll.size() != 0 ) ll.clear();
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject postJson = response.getJSONObject(i);
-                                String id , txtpost, datepost, emailusr, imgpost;
+                                String id , txtpost, datepost, emailusr;
                                 id = postJson.getString("_id");
                                 txtpost = postJson.getString("txtpost");
                                 datepost = postJson.getString("datepost");
                                 emailusr = postJson.getString("emailusr");
-                                imgpost = postJson.getString("imgpost");
+                                JSONArray imgpost = postJson.getJSONArray("imgpost");
+                                ArrayList<String> imgListPost = new ArrayList<>();
+                                    for (int j=0 ; j<imgpost.length() ; j++) {
+                                        imgListPost.add(imgpost.getString(j));
+                                    }
 
                                 //getImageByUrl(publicUrl + imgpost, i);
-                                Post p = new Post(txtpost, emailusr, imgpost , id , getContext());
+                                Post p = new Post(txtpost, emailusr, imgListPost , id , getContext());
                                 p.setDatepost(datepost);
                                 ll.add(0,p);
 

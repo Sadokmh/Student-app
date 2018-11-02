@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -72,6 +73,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
 
 
+
     public PostAdapter(Context context) {
         layoutInflater=LayoutInflater.from(context);
         myListPost=new ArrayList<>();
@@ -79,6 +81,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         requestQueueUserPost = Volley.newRequestQueue(layoutInflater.getContext());
         requestQueueLikePost = Volley.newRequestQueue(layoutInflater.getContext());
         requestQueueUnlikePost = Volley.newRequestQueue(layoutInflater.getContext());
+        //test imageslider
+
 
 
 
@@ -141,6 +145,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         private TextView profilName,filiere,textPost,datePost,nbLikesView;
         private ImageView imgPost,likePost,commentPost;
         private CircleImageView imgUsr;
+        private ViewPager imgpostViewer;
         private EditText textComm;
 
 
@@ -151,7 +156,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
             filiere=(TextView)itemView.findViewById(R.id.filiereUser);
             datePost = (TextView)itemView.findViewById(R.id.datePost);
             textPost=(TextView)itemView.findViewById(R.id.textPost);
-            imgPost=(ImageView) itemView.findViewById(R.id.imagePost);
+            //imgPost=(ImageView) itemView.findViewById(R.id.imagePost);
+            imgpostViewer = (ViewPager) itemView.findViewById(R.id.view_pager);
             commentPost = (ImageView) itemView.findViewById(R.id.commentPostButton);
             likePost=(ImageView) itemView.findViewById(R.id.likePostButton);
              imgUsr=(CircleImageView) itemView.findViewById(R.id.profileImg);
@@ -262,6 +268,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                 else {
                     viewHolder.likePost.setImageResource(R.drawable.ic_like_not_clicked);
                 }
+
+                //test imageslider
+
+                ImageAdapter adapter = new ImageAdapter(layoutInflater.getContext(),post.getImgpost());
+                //adapter.setImgUrls(post.getImgpost());
+                //adapter.notifyDataSetChanged();
+                viewHolder.imgpostViewer.setAdapter(adapter);
+
 
             }
         }, new Response.ErrorListener() {

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.button.MaterialButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.sadokmm.student.Activities.AfficheJournee;
 import com.example.sadokmm.student.Activities.SalleActivity;
+import com.example.sadokmm.student.Adapters.ImageAdapter;
 import com.example.sadokmm.student.R;
 
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
@@ -46,6 +48,9 @@ public class TimeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_time,container,false);
         actuelle(view);
+
+
+
 
         return view ;
 
@@ -239,6 +244,8 @@ public class TimeFragment extends Fragment {
         //Toast.makeText(this,"hggg" + jourNum,Toast.LENGTH_LONG).show();
 
     }
+
+
 
 
 

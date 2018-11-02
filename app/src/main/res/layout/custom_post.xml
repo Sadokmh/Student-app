@@ -77,14 +77,24 @@
                 android:layout_marginRight="10dp"
                  />
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imagePost"
                 android:layout_width="300dp"
                 android:layout_height="238dp"
 
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"/> -->
+
+                <android.support.v4.view.ViewPager
+                    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="300dp"
+                    android:layout_height="240dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/view_pager">
+
+
+
+                </android.support.v4.view.ViewPager>
 
             </LinearLayout>
 

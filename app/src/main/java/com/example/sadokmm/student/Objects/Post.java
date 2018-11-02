@@ -30,7 +30,7 @@ public class Post {
     private String id;
     private String txtpost;
     private String emailusr;
-    private String imgpost;
+    private ArrayList<String> imgpost;
     private String datepost;
     private ArrayList<String> listLikes;
 
@@ -39,7 +39,7 @@ public class Post {
     private Context context;
 
 
-    public Post(String txtpost, String emailusr, String imgpost , String id , Context context) {
+    public Post(String txtpost, String emailusr, ArrayList<String> imgpost , String id , Context context) {
         this.id = id;
         this.txtpost = txtpost;
         this.emailusr = emailusr;
@@ -133,11 +133,11 @@ public class Post {
         this.emailusr = emailusr;
     }
 
-    public String getImgpost() {
+    public ArrayList<String> getImgpost() {
         return imgpost;
     }
 
-    public void setImgpost(String imgpost) {
+    public void setImgpost(ArrayList<String> imgpost) {
         this.imgpost = imgpost;
     }
 

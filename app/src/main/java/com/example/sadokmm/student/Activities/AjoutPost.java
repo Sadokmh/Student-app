@@ -2,6 +2,7 @@ package com.example.sadokmm.student.Activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,15 +11,19 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,15 +32,21 @@ import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.misc.ImageUtils;
 import com.android.volley.request.SimpleMultiPartRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.sadokmm.student.Adapters.ImgPostRv;
+import com.example.sadokmm.student.Gallery_multiple_photos.Gallery;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.R;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
@@ -46,16 +57,25 @@ public class AjoutPost extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView ajouterImage;
 
+    private TextView suppSelctPhotos;
+
     private EditText txtPost;
     private Bitmap myNewImage;
-    private ImageView imgShow;
+    //private ImageView imgShow;
     final static int OPENCAM_CODE = 22;
-    final static int OPENGALLERY_CODE = 23;
-    private Uri filepath;
 
-    private String fileePath;
+    private  ProgressDialog prgDialog ;
 
-    ProgressDialog prgDialog ;
+
+    //multp
+    final int PICK_IMAGE_MULTIPLE = 1;
+
+    private ArrayList<Bitmap> bitmapArrayList;
+
+    private BitmapFactory.Options options ;
+
+    private RecyclerView imgPostRv;
+    private ImgPostRv adapterImgPostRv;
 
 
     @Override
@@ -70,20 +90,41 @@ public class AjoutPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout_post);
 
+        bitmapArrayList = new ArrayList<>();
+        options= new BitmapFactory.Options();
+        options.inSampleSize = 5;
+
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Ajouter une publication");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        imgPostRv = (RecyclerView) findViewById(R.id.imgPostRv);
+        adapterImgPostRv = new ImgPostRv(this);
+        imgPostRv.setLayoutManager(new GridLayoutManager(this,3));
+        imgPostRv.setAdapter(adapterImgPostRv);
+
+        suppSelctPhotos = (TextView) findViewById(R.id.suppSelectPhotos);
         txtPost = (EditText) findViewById(R.id.txtPost);
-        imgShow = (ImageView) findViewById(R.id.imgShow);
         ajouterImage = (ImageView) findViewById(R.id.ajouterImage);
         ajouterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 selectImage();
+                /*Intent intent = new Intent(AjoutPost.this,Gallery.class);
+                startActivity(intent);*/
+
+            }
+        });
+
+        suppSelctPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bitmapArrayList.clear();
+                adapterImgPostRv.getListImg().clear();
+                adapterImgPostRv.notifyDataSetChanged();
             }
         });
 
@@ -95,6 +136,7 @@ public class AjoutPost extends AppCompatActivity {
         if (txtPost.getText().toString().length() < 8) {
             Snackbar.make(view, "Veuiller saisir au moins 8 caractères !", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
         } else {
             prgDialog = new ProgressDialog(this);
             prgDialog.setMessage("chargement en cours ...");
@@ -103,7 +145,7 @@ public class AjoutPost extends AppCompatActivity {
             prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             prgDialog.setCancelable(true);
             prgDialog.show();
-            Post post = new Post(txtPost.getText().toString(), admin.getEmail(), saveImage(myNewImage, "ffff") , "" , this);
+            Post post = new Post(txtPost.getText().toString(), admin.getEmail(), null , "" , this);
             postPub(post.getTxtpost(), post.getEmailusr(), post.getDatepost());
         }
 
@@ -121,7 +163,6 @@ public class AjoutPost extends AppCompatActivity {
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                //boolean result=Utility.checkPermission(getContext());
                 if (items[item].equals("Camera")) {
                     openCam();
                 } else {
@@ -147,61 +188,77 @@ public class AjoutPost extends AppCompatActivity {
 
     private void openGallery() {
 
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+        /*Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto, OPENGALLERY_CODE);//one can be replaced with any action code
+        pickPhoto.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(pickPhoto.createChooser(pickPhoto,"Select picture"), OPENGALLERY_CODE);//one can be replaced with any action code
+        */
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
     }
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    try {
+    switch (requestCode) {
+        case OPENCAM_CODE:
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                myNewImage = getResizedBitmap((Bitmap) extras.get("data"), 900);
+                bitmapArrayList.add(myNewImage);
+                //imgShow.setImageBitmap(myNewImage);
+            }
+
+            break;
+        case PICK_IMAGE_MULTIPLE:
+
+            if (resultCode == RESULT_OK  && data != null){
+
+
+
+                if(data.getClipData() != null){
+
+                    int count = data.getClipData().getItemCount();
+                    for (int i=0; i<count; i++){
+
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+
+                        Bitmap bitmap = ImageUtils.decodeStream(this.getContentResolver(),imageUri,options);
+                        bitmapArrayList.add(bitmap);
+
+                    }
+                }
+                else if(data.getData() != null){
+
+                    Uri imgUri = data.getData();
+                    myNewImage = ImageUtils.decodeStream(this.getContentResolver(),imgUri,options);
+                    bitmapArrayList.add(myNewImage);
+                }
+            }
+
+
+            break;
+    }
+
+    adapterImgPostRv.setListImg(bitmapArrayList);
+    adapterImgPostRv.notifyDataSetChanged();
+
+    }
+    catch (Exception e) {
+
+    }
+
         super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case OPENCAM_CODE:
-                if (resultCode == RESULT_OK) {
-                    Bundle extras = data.getExtras();
-                    myNewImage = getResizedBitmap((Bitmap)extras.get("data"),500);
-                    imgShow.setImageBitmap(myNewImage);
-                }
-
-                break;
-            case OPENGALLERY_CODE:
-                if (resultCode == RESULT_OK) {
-
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 2;
-
-                    myNewImage = getResizedBitmap(ImageUtils.decodeStream(getContentResolver(),data.getData(),options),500);
-                    imgShow.setImageBitmap(myNewImage);
-
-                }
-                break;
-        }
 
 
     }
 
 
     //Post publication to DB
-
-
-    public String getPath(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-        cursor.close();
-
-        cursor = getContentResolver().query(
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        cursor.close();
-
-        return path;
-    }
-
 
     public void postPub(String txtpost, String emailusr, String datepost) throws FileNotFoundException {
         try {
@@ -214,12 +271,15 @@ public class AjoutPost extends AppCompatActivity {
                             prgDialog.dismiss();
 
                             Toast.makeText(getApplicationContext(), "Okey", Toast.LENGTH_LONG).show();
+                            finish();
+
+
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     prgDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), error.getMessage() +5, Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -228,8 +288,12 @@ public class AjoutPost extends AppCompatActivity {
             smr.addStringParam("emailusr", emailusr);
             smr.addStringParam("datepost", datepost);
 
+            for (int i=0 ; i<bitmapArrayList.size();i++) {
+                smr.addFile("imgpost"+i,saveImage(bitmapArrayList.get(i),"imgpost"+i+i));
+            }
 
-            smr.addFile("imgpost", fileePath);
+
+
 
             RequestQueue mRequestQueue = Volley.newRequestQueue(this);
             mRequestQueue.add(smr);
@@ -260,18 +324,15 @@ public class AjoutPost extends AppCompatActivity {
 
     private String saveImage(Bitmap bmp, String filename) throws FileNotFoundException {
 
-
-
-
         String file_path = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/Student";
+                "/Posts";
         File dir = new File(file_path);
         if(!dir.exists())
             dir.mkdirs();
-        File file = new File(dir, "Students-" + filename + ".png");
+        File file = new File(dir, "Posts-" + filename + ".png");
         FileOutputStream fOut = new FileOutputStream(file);
 
-        bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
         try {
             fOut.flush();
             fOut.close();
@@ -280,11 +341,17 @@ public class AjoutPost extends AppCompatActivity {
         }
 
         String filePath = file.getPath();
-        fileePath = filePath;
+
 
 
         return filePath;
 
     }
+
+
+
+
+
+
 
 }

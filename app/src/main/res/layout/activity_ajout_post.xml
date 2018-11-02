@@ -62,14 +62,29 @@
             android:text="Publier"
             android:textColor="@color/colorLight" />
 
+        <TextView
+            android:id="@+id/suppSelectPhotos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:layout_marginTop="59dp"
+            android:layout_marginEnd="39dp"
+            android:textSize="25dp"
+            android:text="X" />
+
     </RelativeLayout>
 
 
-    <ImageView
-        android:id="@+id/imgShow"
-        android:layout_marginTop="20dp"
+
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/imgPostRv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"/>
 
 
 
