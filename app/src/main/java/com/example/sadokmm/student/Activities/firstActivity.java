@@ -48,7 +48,7 @@ public class firstActivity extends AppCompatActivity {
     public static Emploi monEmploi;
 
 
-    public final static String publicUrl = "http://192.168.1.15:8080/";
+    public final static String publicUrl = "http://192.168.1.14:8080/";
 
     public static Activity myActivity;
 

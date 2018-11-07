@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.sadokmm.student.R;
 
@@ -18,6 +19,7 @@ public class ImgPostRv extends RecyclerView.Adapter<ImgPostRv.ViewHolder> {
     private ArrayList<Bitmap> listImg;
     private Context context;
     private LayoutInflater layoutInflater;
+    private String fileName;
 
     public ImgPostRv(Context context) {
         this.context = context;
@@ -40,6 +42,7 @@ public class ImgPostRv extends RecyclerView.Adapter<ImgPostRv.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
 
         viewHolder.imgShow.setImageBitmap(listImg.get(i));
+       // viewHolder.fileName.setText(fileName);
 
     }
 
@@ -56,14 +59,20 @@ public class ImgPostRv extends RecyclerView.Adapter<ImgPostRv.ViewHolder> {
         this.listImg = listImg;
     }
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imgShow;
+        private TextView fileName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imgShow = (ImageView) itemView.findViewById(R.id.imgShow);
+            //fileName = (TextView) itemView.findViewById(R.id.filename);
 
         }
     }

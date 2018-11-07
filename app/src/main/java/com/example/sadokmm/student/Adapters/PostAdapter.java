@@ -92,7 +92,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view=layoutInflater.inflate(R.layout.custom_post,viewGroup,false);
+        View view=layoutInflater.inflate(R.layout.post_custom,viewGroup,false);
         ViewHolder viewHolder=new ViewHolder(view);
 
 
@@ -208,7 +208,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                     viewHolder.datePost.setText(post.getDatepost());
                     viewHolder.textPost.setText(post.getTxtpost());
                     aq.id(viewHolder.imgUsr).image(imgUrl);
-                    aq.id(viewHolder.imgPost).image(publicUrl + post.getImgpost()).progress(dialog);
+                   // aq.id(viewHolder.imgPost).image(publicUrl + post.getImgpost()).progress(dialog);
+
                     viewHolder.commentPost.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

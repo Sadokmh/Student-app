@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base">
-        <activity android:name=".Activities.MainActivity" />
+        <activity android:name=".Activities.MainActivity"  />
         <activity android:name=".Activities.AfficheJournee" />
         <activity android:name=".Activities.firstActivity">
             <intent-filter>
