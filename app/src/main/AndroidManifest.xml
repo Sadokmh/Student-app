@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base">
-        <activity android:name=".Activities.MainActivity"  />
+        <activity android:name=".Activities.MainActivity" />
         <activity android:name=".Activities.AfficheJournee" />
         <activity android:name=".Activities.firstActivity">
             <intent-filter>
@@ -26,7 +26,9 @@
         <activity android:name=".Activities.CommentaireActivity" />
         <activity android:name=".Activities.AjoutPost" />
         <activity android:name=".Activities.SalleActivity" />
-        <activity android:name=".Gallery_multiple_photos.Gallery"></activity>
+        <activity android:name=".Gallery_multiple_photos.Gallery" />
+        <activity android:name=".Activities.ProfileActivity" />
+        <activity android:name=".Activities.ParametreActivity"></activity>
     </application>
 
 </manifest>

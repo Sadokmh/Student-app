@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 public class User {
 
-    private String id ;
+    private String _id ;
     private String nom ;
     private String prenom ;
     private String email ;
@@ -14,7 +14,7 @@ public class User {
     private int niveau ;
 
     public User(String id, String nom, String prenom, String email, String img, String filiere, int groupe, int niveau) {
-        this.id = id;
+        this._id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
@@ -26,11 +26,11 @@ public class User {
 
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this._id = id;
     }
 
     public String getNom() {

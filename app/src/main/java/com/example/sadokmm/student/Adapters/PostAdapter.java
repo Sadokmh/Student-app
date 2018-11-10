@@ -4,18 +4,11 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,24 +21,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
-import com.android.volley.request.ImageRequest;
-import com.android.volley.request.JsonArrayRequest;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.request.JsonRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
 import com.example.sadokmm.student.Activities.CommentaireActivity;
-import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Activities.ProfileActivity;
 import com.example.sadokmm.student.Objects.Post;
-import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
-import com.google.gson.JsonArray;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +41,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
-import static com.example.sadokmm.student.Activities.firstActivity.getResizedBitmap;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
@@ -65,10 +49,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     private List<Post> myListPost;
     private LayoutInflater layoutInflater;
 
-    AQuery aq;
-    RequestQueue requestQueueUserPost,requestQueueLikePost,requestQueueUnlikePost;
+    private AQuery aq;
+    private RequestQueue requestQueueUserPost,requestQueueLikePost,requestQueueUnlikePost;
 
-    ProgressDialog prgDialog;
+    private Boolean clickFromProfile;
+
 
 
 
@@ -81,7 +66,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         requestQueueUserPost = Volley.newRequestQueue(layoutInflater.getContext());
         requestQueueLikePost = Volley.newRequestQueue(layoutInflater.getContext());
         requestQueueUnlikePost = Volley.newRequestQueue(layoutInflater.getContext());
-        //test imageslider
+        clickFromProfile = false;
 
 
 
@@ -107,10 +92,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
         chercherUserByEmailAndCreatePost(i,viewHolder);
 
-        /*if (userlike(i)) {
-            viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
-        }*/
-
 
     }
 
@@ -135,8 +116,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         return myListPost;
     }
 
+    public Boolean getClickFromProfile() {
+        return clickFromProfile;
+    }
 
-
+    public void setClickFromProfile(Boolean clickFromProfile) {
+        this.clickFromProfile = clickFromProfile;
+    }
 
     //
 
@@ -164,8 +150,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
             textComm = (EditText) itemView.findViewById(R.id.commentPostText);
             nbLikesView = (TextView) itemView.findViewById(R.id.nbLikes);
             //salleLayout=(LinearLayout)itemView.findViewById(R.id.salleLayout);
-            //profLayout=(LinearLayout)itemView.findViewById(R.id.profLayout);
-            //coursLayout=(LinearLayout)itemView.findViewById(R.id.coursLayout);
 
         }
     }
@@ -276,6 +260,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                 //adapter.setImgUrls(post.getImgpost());
                 //adapter.notifyDataSetChanged();
                 viewHolder.imgpostViewer.setAdapter(adapter);
+
+
+                //interdire d'ouvrir le profil de nouveau s'il est dans la page profil
+                if (!clickFromProfile) {
+                    viewHolder.imgUsr.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
+                            intent.putExtra("email",myListPost.get(i).getEmailusr());
+                            layoutInflater.getContext().startActivity(intent);
+                        }
+                    });
+
+                    viewHolder.profilName.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
+                            intent.putExtra("email",myListPost.get(i).getEmailusr());
+                            layoutInflater.getContext().startActivity(intent);
+                        }
+                    });
+                }
 
 
             }

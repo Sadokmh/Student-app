@@ -11,7 +11,7 @@
     <android.support.design.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardBackgroundColor="@color/colorLight"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="30dp">
 
         <LinearLayout
@@ -131,7 +131,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorLight">
+                android:background="@color/white">
 
 
                 <ImageView

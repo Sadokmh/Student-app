@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Activities.ParametreActivity;
+import com.example.sadokmm.student.Activities.ProfileActivity;
 import com.example.sadokmm.student.Activities.SalleActivity;
 import com.example.sadokmm.student.Adapters.AdapterDrawer;
 import com.example.sadokmm.student.Listeners.RecyclerTouchListener;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
 
 public class NavigationDrawerFragment extends Fragment  {
 
@@ -36,7 +39,7 @@ public class NavigationDrawerFragment extends Fragment  {
     public static final String PREF_FILE_Name="testpref";
     public static final String KEY_USER_LEARNED_DRAWER="user_learned_drawer";
 
-    private AdapterDrawer mAdap;
+    public static AdapterDrawer mAdap;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -93,6 +96,9 @@ public class NavigationDrawerFragment extends Fragment  {
                         break;
                     }
                     case 2 : {
+                        Intent intent = new Intent(getContext(),ProfileActivity.class);
+                        intent.putExtra("email",admin.getEmail());
+                        getContext().startActivity(intent);
                         break;
                     }
                     case 3 : {
@@ -111,6 +117,11 @@ public class NavigationDrawerFragment extends Fragment  {
                         break;
                     }
                     case 5 : {
+                        Intent intent = new Intent(getContext(), ParametreActivity.class);
+                        startActivity(intent);
+                        break;
+                    }
+                    case 6 : {
                         SharedPreferences.Editor editor=getActivity().getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
                         editor.clear();
                         editor.commit();
@@ -137,8 +148,8 @@ public class NavigationDrawerFragment extends Fragment  {
 
     public static List<Information> getData(){
         List<Information> data=new ArrayList<>();
-        int[] icons = {R.drawable.ic_home , R.drawable.ic_person , R.drawable.ic_about , R.drawable.ic_map , R.drawable.ic_logout };
-        String[] titles= {"Acceuil" , "Profile" , "Info" , "Plan de l'ISG" , "Déconnexion" };
+        int[] icons = {R.drawable.ic_home , R.drawable.ic_person , R.drawable.ic_about , R.drawable.ic_map , R.drawable.ic_build_black_24dp ,R.drawable.ic_logout };
+        String[] titles= {"Acceuil" , "Profile" , "Info" , "Plan de l'ISG" , "Paramètres" , "Déconnexion" };
 
         for (int i=0 ; i<icons.length && i<titles.length ; i++)
         {

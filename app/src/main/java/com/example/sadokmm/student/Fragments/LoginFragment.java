@@ -26,6 +26,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
@@ -129,7 +130,7 @@ public class LoginFragment extends Fragment {
                 } else {
 
 
-                        chercherUserByEmail(emailText.getText().toString().toLowerCase(),pass.getText().toString());
+                        chercherUserByEmail2(emailText.getText().toString().toLowerCase(),pass.getText().toString());
 
 
                 }
@@ -215,6 +216,72 @@ public class LoginFragment extends Fragment {
         });
 
         requestQueue.add(jsonObjectRequest);
+
+
+        //aq.ajax(url, JSONObject.class,this,"emailCallback");
+
+    }
+
+
+
+
+    public void chercherUserByEmail2(final String email , final String mdp) {
+
+        dialog = new Dialog(getContext());
+        dialog.setTitle("Connexion en cours");
+        dialog.setCancelable(true);
+        dialog.show();
+
+
+
+        String url= publicUrl + "student/login";
+
+        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, url,  new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Gson gson = new Gson();
+                admin = gson.fromJson(response,User.class);
+                admin.setImg(publicUrl+admin.getImg());
+
+
+
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(SESSION, MODE_PRIVATE).edit();
+                editor.putBoolean("statut", true);
+                editor.putString("email", admin.getEmail());
+                editor.putString("prenom", admin.getPrenom());
+                editor.putString("nom", admin.getNom());
+                editor.putString("filiere", admin.getFiliere());
+                editor.putString("img", admin.getImg());
+                editor.putInt("groupe", admin.getGroupe());
+                editor.putInt("niveau", admin.getNiveau());
+                editor.commit();
+
+                chargerMonEmploi();
+
+                dialog.dismiss();
+
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.putExtra("type","login");
+                emailText.getText().clear();
+                pass.getText().clear();
+
+                startActivity(intent);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
+
+
+            }
+        });
+
+        smr.addStringParam("email",email);
+        smr.addStringParam("mdp",mdp);
+        requestQueue.add(smr);
 
 
         //aq.ajax(url, JSONObject.class,this,"emailCallback");

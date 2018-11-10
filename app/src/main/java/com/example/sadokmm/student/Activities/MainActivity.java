@@ -114,10 +114,8 @@ public class MainActivity extends AppCompatActivity {
         aq = new AQuery(this);
         requestQueue = Volley.newRequestQueue(this);
         setUpFab();
-        //chargerMonEmploi();
 
-        Toast.makeText(this, "dddd", Toast.LENGTH_LONG).show();
-
+        getStringDate();
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -136,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(pageAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        Toast.makeText(this, getStringDate(), Toast.LENGTH_LONG).show();
 
 
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
@@ -152,13 +149,11 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()) {
 
 
-           /* Toast.makeText(this,"Connecté ! ",Toast.LENGTH_SHORT).show();
 
-            String type = getIntent().getExtras().getString("type");
-            if (type.equals("register")){
-               // chargerUserFromRegister(getIntent().getExtras().getString("email"),getIntent().getExtras().getString("pass"));
-            }
-            //chargerMonEmploi();*/
+           /* String type = getIntent().getExtras().getString("type");
+            if (type.equals("parametres")){
+
+            }*/
 
         }
 
@@ -182,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            //chargerMonEmploi();
         }
 
 
@@ -218,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
         prgDialog.show();
 
 
-//        Snackbar.make(getCurrentFocus(),url,Snackbar.LENGTH_LONG).show();
 
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -248,13 +241,6 @@ public class MainActivity extends AppCompatActivity {
 
                     String nomJour;
 
-                    /*prgDialog = new ProgressDialog(getApplicationContext());
-                    prgDialog.setMessage("Connexion en cours ...");
-                    prgDialog.setIndeterminate(false);
-                    //prgDialog.setMax(100);
-                    prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    prgDialog.setCancelable(false);
-                    prgDialog.show();*/
 
                     JSONArray seanceArray;
                     for (int i = 0; i < joursArray.length(); i++) {

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sadokmm.student.Activities.AfficheJournee;
 import com.example.sadokmm.student.Activities.SalleActivity;
@@ -23,6 +24,7 @@ import static com.example.sadokmm.student.Activities.MainActivity.currentSession
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceActuelle;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceVide;
+import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 
 public class TimeFragment extends Fragment {
@@ -149,14 +151,14 @@ public class TimeFragment extends Fragment {
 
                     }
                 }
-            } /*else if (jourNum == 5) {
+            } else if (jourNum == 5) {
 
                 for (int i = 0; i < monEmploi.getJours().get(5).getListSeance().size(); i++) {
                     if (monEmploi.getJours().get(5).getListSeance().get(i).getNumSeance() == currentSession) {
                         seanceActuelle = (monEmploi.getJours().get(5).getListSeance().get(i));
                     }
                 }
-            }*/
+            }
         }
 
         else {

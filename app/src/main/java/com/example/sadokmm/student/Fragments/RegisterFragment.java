@@ -75,8 +75,8 @@ import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class RegisterFragment extends Fragment {
 
-    final static int OPENCAM_CODE = 22;
-    final static int OPENGALLERY_CODE = 23;
+    public final static int OPENCAM_CODE = 22;
+    public final static int OPENGALLERY_CODE = 23;
 
     private Uri filepath;
 
@@ -557,7 +557,6 @@ public class RegisterFragment extends Fragment {
 
 
 
-                //admin=new User("0",nom,prenom,email,pass,myNewImage,filiere,Integer.parseInt(groupe),Integer.parseInt(niveau));
 
 
 
@@ -571,16 +570,7 @@ public class RegisterFragment extends Fragment {
 
 
         String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
-        //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
         Toast.makeText(getContext(),url,Toast.LENGTH_LONG).show();
-
-        /*prgDialog = new ProgressDialog(getContext());
-        prgDialog.setMessage("chargement en cours ...");
-        prgDialog.setIndeterminate(false);
-        //prgDialog.setMax(100);
-        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        prgDialog.setCancelable(false);
-        prgDialog.show();*/
 
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override

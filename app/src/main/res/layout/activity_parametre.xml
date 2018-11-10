@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+     >
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".Activities.ParametreActivity"
+        android:orientation="vertical">
+
+        <include android:id="@+id/app_bar"
+            layout="@layout/app_bar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="20dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vos informations : "
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Nom :"/>
+
+                <EditText
+                    android:id="@+id/nomP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mhiri"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Prenom :"/>
+
+                <EditText
+                    android:id="@+id/prenomP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Sadok Mourad"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Email :"/>
+
+                <EditText
+                    android:id="@+id/emailP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Sadokmhiri@gmail.com"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Niveau :"/>
+
+                <Spinner
+                    android:id="@+id/spinnerNiveauP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mhiri"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Filière :"/>
+
+                <Spinner
+                    android:id="@+id/spinnerFiliereP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mhiri"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Groupe :"/>
+
+                <Spinner
+                    android:id="@+id/spinnerGroupeP"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mhiri"
+                    android:layout_marginLeft="30dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="30dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Photo :"
+                    android:layout_marginTop="30dp"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/photoP"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="30dp"
+                    android:src="@drawable/ic_photo_cam"/>
+
+                <ImageView
+                    android:id="@+id/suppImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_clear"/>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/errorTxtP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"/>
+
+
+            <TextView
+                android:id="@+id/btnMAJp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mettre à jour"
+                android:padding="8dp"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/white"
+                android:layout_gravity="right"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
