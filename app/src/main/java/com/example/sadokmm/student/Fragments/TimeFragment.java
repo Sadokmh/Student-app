@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.design.button.MaterialButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,29 @@ import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonArrayRequest;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.sadokmm.student.Activities.AfficheJournee;
 import com.example.sadokmm.student.Activities.SalleActivity;
+import com.example.sadokmm.student.Adapters.ActuAdapter;
 import com.example.sadokmm.student.Adapters.ImageAdapter;
+import com.example.sadokmm.student.Objects.Actualite;
 import com.example.sadokmm.student.R;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
@@ -26,11 +46,15 @@ import static com.example.sadokmm.student.Activities.MainActivity.seanceActuelle
 import static com.example.sadokmm.student.Activities.MainActivity.seanceVide;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
+import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class TimeFragment extends Fragment {
 
 
     public static TextView afficheBtn;
+    private RecyclerView actuRv;
+    private ActuAdapter actuAdapter ;
+    private ArrayList<Actualite> listeAct ;
 
     public TimeFragment() {
 
@@ -51,6 +75,13 @@ public class TimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_time,container,false);
         actuelle(view);
 
+        actuRv = (RecyclerView) view.findViewById(R.id.actuRv);
+        actuAdapter = new ActuAdapter(getContext());
+        actuRv.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        listeAct = new ArrayList<>();
+        chargerActu();
 
 
 
@@ -250,6 +281,51 @@ public class TimeFragment extends Fragment {
 
 
 
+    private void chargerActu(){
+
+
+
+        String url = publicUrl + "student/getisgnews";
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+
+        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                String text , titre , date , lien ;
+                try {
+
+
+                for (int i=0 ; i<response.length() ; i++) {
+                    JSONObject act = response.getJSONObject(i);
+                    titre = act.getString("titre");
+                    text = act.getString("txt");
+                    date = act.getString("date");
+                    lien = act.getString("lien");
+
+
+                    listeAct.add(new Actualite(titre,text,date,lien));
+
+                }
+
+                actuAdapter.setListActu(listeAct);
+                actuRv.setAdapter(actuAdapter);
+
+                }
+                catch (JSONException e) {
+                    Toast.makeText(getContext(),e.toString(),Toast.LENGTH_LONG).show();
+                }
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+    }
 
 
 

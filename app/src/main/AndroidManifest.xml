@@ -28,7 +28,9 @@
         <activity android:name=".Activities.SalleActivity" />
         <activity android:name=".Gallery_multiple_photos.Gallery" />
         <activity android:name=".Activities.ProfileActivity" />
-        <activity android:name=".Activities.ParametreActivity"></activity>
+        <activity android:name=".Activities.ParametreActivity" />
+        <activity android:name=".Activities.Site" />
+        <activity android:name=".Activities.FullScreenImage"></activity>
     </application>
 
 </manifest>

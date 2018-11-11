@@ -261,13 +261,14 @@
         android:layout_marginTop="156dp"
         app:srcCompat="@color/colorPrimary" />
 
-    <ImageView
+    <android.support.v7.widget.CardView
         android:id="@+id/c"
         android:layout_width="184dp"
         android:layout_height="65dp"
         android:layout_alignEnd="@+id/imageView"
         android:layout_centerVertical="true"
-        app:srcCompat="@color/colorPrimary" />
+
+        app:cardBackgroundColor="@color/colorPrimary"/>
 
     <ImageView
         android:id="@+id/d"
