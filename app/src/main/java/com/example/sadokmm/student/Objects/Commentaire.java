@@ -10,14 +10,19 @@ public class Commentaire {
     private String id ;
     private String txtComm;
     private String dateComm;
-    private String emailUsr;
+    private String idusr;
     private String idPost;
 
 
-    public Commentaire(String id, String txtComm, String emailUsr , String idPost) {
+    public Commentaire(){
+
+    }
+
+
+    public Commentaire(String id, String txtComm, String idusr , String idPost) {
         this.id = id;
         this.txtComm = txtComm;
-        this.emailUsr = emailUsr;
+        this.idusr = idusr;
         this.idPost = idPost;
         this.dateComm = getStringDate(Calendar.getInstance().getTime());
     }
@@ -45,12 +50,12 @@ public class Commentaire {
         this.dateComm = dateComm;
     }
 
-    public String getEmailUsr() {
-        return emailUsr;
+    public String getIdusr() {
+        return idusr;
     }
 
-    public void setEmailUsr(String emailUsr) {
-        this.emailUsr = emailUsr;
+    public void setIdusr(String emailUsr) {
+        this.idusr = emailUsr;
     }
 
     public String getIdPost() {

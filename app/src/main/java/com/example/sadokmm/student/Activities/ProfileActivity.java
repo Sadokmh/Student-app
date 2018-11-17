@@ -41,7 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView profile_name,profileFiliere,profileGroupe,profileEmail;
     private ImageView profilePhoto;
     private RecyclerView profileRv;
-    private String email ;
+    private String IDUSR ;
     private PostAdapter postAdapter;
     private User user;
     private AQuery aq;
@@ -87,22 +87,22 @@ public class ProfileActivity extends AppCompatActivity {
         listPost = new ArrayList<>();
 
 
-        email = getIntent().getExtras().getString("email");
+        IDUSR = getIntent().getExtras().getString("id");
 
         postAdapter.setMyList(listPost);
         profileRv.setLayoutManager(new LinearLayoutManager(this));
         profileRv.setAdapter(postAdapter);
 
-        chercherUser(email);
+        chercherUser(IDUSR);
 
 
     }
 
 
 
-    private void chercherUser(String email) {
+    private void chercherUser(final String idUsr) {
 
-        String url = publicUrl + "student/getuser/"+email;
+        String url = publicUrl + "student/getuser/"+idUsr;
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         JsonObjectRequest profileRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -145,7 +145,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),idUsr,Toast.LENGTH_LONG).show();
             }
         });
 
@@ -159,7 +159,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void chargerPost(){
 
-        String url = publicUrl + "student/getpost/" + user.getEmail();
+        String url = publicUrl + "student/getpost/" + user.getId();
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -171,11 +171,11 @@ public class ProfileActivity extends AppCompatActivity {
                     if (listPost.size() != 0 ) listPost.clear();
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject postJson = response.getJSONObject(i);
-                        String id , txtpost, datepost, emailusr;
+                        String id , txtpost, datepost, id_user;
                         id = postJson.getString("_id");
                         txtpost = postJson.getString("txtpost");
                         datepost = postJson.getString("datepost");
-                        emailusr = postJson.getString("emailusr");
+                        id_user = postJson.getString("idusr");
                         JSONArray imgpost = postJson.getJSONArray("imgpost");
                         ArrayList<String> imgListPost = new ArrayList<>();
                         for (int j=0 ; j<imgpost.length() ; j++) {
@@ -183,7 +183,7 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 
                         //getImageByUrl(publicUrl + imgpost, i);
-                        Post p = new Post(txtpost, emailusr, imgListPost , id , getApplicationContext());
+                        Post p = new Post(txtpost, id_user, imgListPost , id );
                         p.setDatepost(datepost);
                         listPost.add(0,p);
 

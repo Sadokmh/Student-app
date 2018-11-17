@@ -11,6 +11,8 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonArrayRequest;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,33 +25,39 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.contextFirst;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class Post {
 
     private String id;
     private String txtpost;
-    private String emailusr;
+    private String idusr;
     private ArrayList<String> imgpost;
+    private ArrayList<Commentaire> commentList;
     private String datepost;
     private ArrayList<String> listLikes;
 
-    private RequestQueue requestQueue;
-
-    private Context context;
 
 
-    public Post(String txtpost, String emailusr, ArrayList<String> imgpost , String id , Context context) {
+
+    public Post(){
+
+    }
+
+
+    public Post(String txtpost, String idusr, ArrayList<String> imgpost , String id) {
         this.id = id;
         this.txtpost = txtpost;
-        this.emailusr = emailusr;
+        this.idusr = idusr;
         this.imgpost = imgpost;
         this.datepost = getStringDate(Calendar.getInstance().getTime());
         this.listLikes = new ArrayList<>();
-        this.context = context;
-        this.requestQueue= Volley.newRequestQueue(context);
+        this.commentList = new ArrayList<>();
+
        //charger les j'aimes:
         chargerLikes();
+        chargerComm();
     }
 
     private String getStringDate(Date dateNow) {
@@ -63,9 +71,9 @@ public class Post {
    //charger les j'aimes de la publication
     public void chargerLikes(){
 
-        String url = publicUrl + "student/postlikes/" + this.id;
+        RequestQueue requestQueue = Volley.newRequestQueue(contextFirst);
 
-       // Toast.makeText(context,"je charge post" , Toast.LENGTH_LONG).show();
+        String url = publicUrl + "student/postlikes/" + this.id;
 
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
@@ -78,12 +86,10 @@ public class Post {
 
                 try {
                     for (int i = 0; i < response.length(); i++) {
-                        String userEmail = response.get(i).toString();
+                        String usrId = response.get(i).toString();
                         //Toast.makeText(,userEmail,Toast.LENGTH_LONG).show();
-                        listLikes.add(userEmail);
+                        listLikes.add(usrId);
                     }
-
-                    //Toast.makeText()
 
 
                 }
@@ -108,12 +114,64 @@ public class Post {
     public Boolean userlike(){
 
         for (int i=0 ; i<listLikes.size();i++) {
-            if (listLikes.get(i).equals(admin.getEmail()))
+            if (listLikes.get(i).equals(admin.getId()))
                 return true;
         }
         return false;
 
     }
+
+
+    //import commentaires :
+
+    public void chargerComm () {
+        AQuery aq=new AQuery(contextFirst);
+        String url = publicUrl + "student/getallcom/" + this.id;
+
+        aq.ajax(url,JSONArray.class,this,"chargercallback");
+
+    }
+
+    public void chargercallback(String url , JSONArray response , AjaxStatus status){
+
+        if (response != null) {
+            try {
+
+                //Toast.makeText(context,response.length() + " ",Toast.LENGTH_LONG).show();
+
+                for (int i = 0; i < response.length(); i++) {
+                    JSONObject CommJson = response.getJSONObject(i);
+                    String idComm  , txtComm, dateComm, idusr;
+                    idComm = CommJson.getString("_id");
+                    txtComm = CommJson.getString("txtcom");
+                    dateComm = CommJson.getString("datecom");
+                    idusr = CommJson.getString("idusr");
+
+                    Commentaire commentaire = new Commentaire(idComm ,txtComm, idusr, this.id );
+                    commentaire.setDateComm(dateComm);
+                    commentList.add(commentaire);
+
+
+
+
+                }
+            } catch (JSONException e) {
+                Toast.makeText(contextFirst, e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(contextFirst, e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(contextFirst, e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(contextFirst, "kiiiii5", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        else {
+            Toast.makeText(contextFirst,"NULL ",Toast.LENGTH_LONG).show();
+        }
+
+
+
+    }
+
+
 
 
 
@@ -125,12 +183,12 @@ public class Post {
         this.txtpost = txtpost;
     }
 
-    public String getEmailusr() {
-        return emailusr;
+    public String getIdusr() {
+        return idusr;
     }
 
-    public void setEmailusr(String emailusr) {
-        this.emailusr = emailusr;
+    public void setIdusr(String emailusr) {
+        this.idusr = emailusr;
     }
 
     public ArrayList<String> getImgpost() {
@@ -163,5 +221,13 @@ public class Post {
 
     public void setListLikes(ArrayList<String> listLikes) {
         this.listLikes = listLikes;
+    }
+
+    public ArrayList<Commentaire> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(ArrayList<Commentaire> commentList) {
+        this.commentList = commentList;
     }
 }

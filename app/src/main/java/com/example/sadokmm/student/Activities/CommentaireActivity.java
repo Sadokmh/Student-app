@@ -92,56 +92,6 @@ public class CommentaireActivity extends AppCompatActivity {
     }
 
 
-    /* public void charger(int deb, int fin) {
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-
-        String url = publicUrl + "student/getallcom/5bcc79b05179a334b8360eb4";
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            if (adapterComm.getMyListComm().size() != 0) adapterComm.getMyListComm().clear();
-                            Toast.makeText(getApplicationContext(),response.length() + " ",Toast.LENGTH_LONG).show();
-                            commText.setText(id_post);
-                            for (int i = 0; i < response.length(); i++) {
-                                JSONObject CommJson = response.getJSONObject(i);
-                                String idComm  , txtComm, dateComm, emailUsr;
-                                idComm = CommJson.getString("_id");
-                                txtComm = CommJson.getString("txtcom");
-                                dateComm = CommJson.getString("datecom");
-                                emailUsr = CommJson.getString("emailusr");
-
-                                Commentaire commentaire = new Commentaire(idComm ,txtComm, emailUsr, id_post );
-                                commentaire.setDateComm(dateComm);
-                                listComm.add(commentaire);
-                                adapterComm.getMyListComm().add(commentaire);
-                                //adapterComm.notifyDataSetChanged();
-
-
-
-                            }
-                        } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-                            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-                            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        requestQueue.add(jsonArrayRequest);
-        adapterComm.notifyDataSetChanged();
-
-    }*/
 
 
    public void charger () {
@@ -164,13 +114,13 @@ public class CommentaireActivity extends AppCompatActivity {
                commText.setText(id_post);
                for (int i = 0; i < response.length(); i++) {
                    JSONObject CommJson = response.getJSONObject(i);
-                   String idComm  , txtComm, dateComm, emailUsr;
+                   String idComm  , txtComm, dateComm, id_usr;
                    idComm = CommJson.getString("_id");
                    txtComm = CommJson.getString("txtcom");
                    dateComm = CommJson.getString("datecom");
-                   emailUsr = CommJson.getString("emailusr");
+                   id_usr = CommJson.getString("idusr");
 
-                   Commentaire commentaire = new Commentaire(idComm ,txtComm, emailUsr, id_post );
+                   Commentaire commentaire = new Commentaire(idComm ,txtComm, id_usr, id_post );
                    commentaire.setDateComm(dateComm);
                    listComm.add(commentaire);
                    adapterComm.getMyListComm().add(commentaire);
@@ -218,10 +168,10 @@ public class CommentaireActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"erreur insertion commentaire ", Toast.LENGTH_LONG).show();
             }
         });
-        Commentaire commentaire = new Commentaire("0",commText.getText().toString(),admin.getEmail(),id_post);
+        Commentaire commentaire = new Commentaire("0",commText.getText().toString(),admin.getId(),id_post);
         smr.addStringParam("txtcom",commentaire.getTxtComm());
         smr.addStringParam("datecom",commentaire.getDateComm());
-        smr.addStringParam("emailusr",commentaire.getEmailUsr());
+        smr.addStringParam("idusr",commentaire.getIdusr());
         smr.addStringParam("idpost",commentaire.getIdPost());
 
 

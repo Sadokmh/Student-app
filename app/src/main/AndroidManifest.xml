@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +31,23 @@
         <activity android:name=".Activities.ProfileActivity" />
         <activity android:name=".Activities.ParametreActivity" />
         <activity android:name=".Activities.Site" />
-        <activity android:name=".Activities.FullScreenImage"></activity>
+        <activity android:name=".Activities.FullScreenImage" />
+
+        <receiver
+            android:name=".Broadcasts.ReceiverServiceActuNotifications"
+            android:priority="2147483647">
+            <intent-filter>
+                <action android:name="com.example.sadokmm.student.Broadcasts" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".ServiceActuNotifications"
+            android:exported="false" />
+        <service
+            android:name=".Services.ServiceCommentNotifcation"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -40,10 +40,12 @@ import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import static com.example.sadokmm.student.Activities.MainActivity.currentHour;
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceActuelle;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceVide;
+import static com.example.sadokmm.student.Activities.MainActivity.weekend;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
@@ -133,71 +135,79 @@ public class TimeFragment extends Fragment {
 
 
 
-
-        if (currentSession != 0) {
-
-            if (jourNum == 0) {
-
-                for (int i = 0; i < monEmploi.getJours().get(0).getListSeance().size(); i++) {
-
-                    if (monEmploi.getJours().get(0).getListSeance().get(i).getNumSeance() == currentSession) {
-                        //Toast.makeText(this,"hani lenaAA",Toast.LENGTH_LONG).show();
-                        seanceActuelle = monEmploi.getJours().get(0).getListSeance().get(i);
-                        //Toast.makeText(this,"hani lena" + monEmploi.getJours().get(0).getListSeance().get(i).getMatiere(),Toast.LENGTH_LONG).show();
-
-                        break;
-                    }
-                }
-
-
-            } else if (jourNum == 1) {
-
-                for (int i = 0; i < monEmploi.getJours().get(1).getListSeance().size(); i++) {
-                    if (monEmploi.getJours().get(1).getListSeance().get(i).getNumSeance() == currentSession) {
-                        seanceActuelle = monEmploi.getJours().get(1).getListSeance().get(i);
-                        break;
-                    }
-
-
-                }
-            } else if (jourNum == 2) {
-
-                for (int i = 0; i < monEmploi.getJours().get(2).getListSeance().size(); i++) {
-                    if (monEmploi.getJours().get(2).getListSeance().get(i).getNumSeance() == currentSession) {
-                        seanceActuelle = (monEmploi.getJours().get(2).getListSeance().get(i));
-                    }
-                }
-            } else if (jourNum == 3) {
-
-                for (int i = 0; i < monEmploi.getJours().get(3).getListSeance().size(); i++) {
-                    if (monEmploi.getJours().get(3).getListSeance().get(i).getNumSeance() == currentSession) {
-                        seanceActuelle = (monEmploi.getJours().get(3).getListSeance().get(i));
-                    }
-                }
-            } else if (jourNum == 4) {
-
-                for (int i = 0; i < monEmploi.getJours().get(4).getListSeance().size(); i++) {
-                    if (monEmploi.getJours().get(4).getListSeance().get(i).getNumSeance() == currentSession) {
-                        seanceActuelle = (monEmploi.getJours().get(4).getListSeance().get(i));
-
-                    }
-                }
-            } else if (jourNum == 5) {
-
+        if (jourNum == 6) {
+            seanceActuelle = weekend;
+            afficheBtn.setText("Afficher votre emploi");
+            weekend.setNumSeance(0);
+        }
+        else if (jourNum == 5) {
+            if (currentHour < 12) {
                 for (int i = 0; i < monEmploi.getJours().get(5).getListSeance().size(); i++) {
                     if (monEmploi.getJours().get(5).getListSeance().get(i).getNumSeance() == currentSession) {
                         seanceActuelle = (monEmploi.getJours().get(5).getListSeance().get(i));
                     }
                 }
             }
+            else {
+                seanceActuelle = weekend;
+                afficheBtn.setText("Afficher votre emploi");
+                weekend.setNumSeance(0);
+            }
         }
 
         else {
-            //matiere.setText("Pas de cours maintenant");
-            seanceActuelle = seanceVide;
+            if (currentSession != 0) {
+
+                if (jourNum == 0) {
+
+                    for (int i = 0; i < monEmploi.getJours().get(0).getListSeance().size(); i++) {
+
+                        if (monEmploi.getJours().get(0).getListSeance().get(i).getNumSeance() == currentSession) {
+                            //Toast.makeText(this,"hani lenaAA",Toast.LENGTH_LONG).show();
+                            seanceActuelle = monEmploi.getJours().get(0).getListSeance().get(i);
+                            //Toast.makeText(this,"hani lena" + monEmploi.getJours().get(0).getListSeance().get(i).getMatiere(),Toast.LENGTH_LONG).show();
+
+                            break;
+                        }
+                    }
 
 
+                } else if (jourNum == 1) {
+
+                    for (int i = 0; i < monEmploi.getJours().get(1).getListSeance().size(); i++) {
+                        if (monEmploi.getJours().get(1).getListSeance().get(i).getNumSeance() == currentSession) {
+                            seanceActuelle = monEmploi.getJours().get(1).getListSeance().get(i);
+                            break;
+                        }
+
+
+                    }
+                } else if (jourNum == 2) {
+
+                    for (int i = 0; i < monEmploi.getJours().get(2).getListSeance().size(); i++) {
+                        if (monEmploi.getJours().get(2).getListSeance().get(i).getNumSeance() == currentSession) {
+                            seanceActuelle = (monEmploi.getJours().get(2).getListSeance().get(i));
+                        }
+                    }
+                } else if (jourNum == 3) {
+
+                    for (int i = 0; i < monEmploi.getJours().get(3).getListSeance().size(); i++) {
+                        if (monEmploi.getJours().get(3).getListSeance().get(i).getNumSeance() == currentSession) {
+                            seanceActuelle = (monEmploi.getJours().get(3).getListSeance().get(i));
+                        }
+                    }
+                } else if (jourNum == 4) {
+
+                    for (int i = 0; i < monEmploi.getJours().get(4).getListSeance().size(); i++) {
+                        if (monEmploi.getJours().get(4).getListSeance().get(i).getNumSeance() == currentSession) {
+                            seanceActuelle = (monEmploi.getJours().get(4).getListSeance().get(i));
+
+                        }
+                    }
+                }
+            }
         }
+
 
 
 

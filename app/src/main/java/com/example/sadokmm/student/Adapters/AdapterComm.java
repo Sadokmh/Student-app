@@ -98,7 +98,7 @@ public class AdapterComm extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
 
         //Afficher / masquer le bouton supprimer
-        if (commentaire.getEmailUsr().equals(admin.getEmail()))
+        if (commentaire.getIdusr().equals(admin.getId()))
         {
             viewHolder.deleteComm.setVisibility(View.VISIBLE);
         }
@@ -184,7 +184,7 @@ public class AdapterComm extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
 
         final Commentaire commentaire=myListComm.get(i);
-        String url = publicUrl + "student/getuser/"+commentaire.getEmailUsr();
+        String url = publicUrl + "student/getuser/"+commentaire.getIdusr();
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

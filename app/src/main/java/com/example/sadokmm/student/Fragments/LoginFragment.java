@@ -38,6 +38,7 @@ import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
@@ -75,6 +76,7 @@ public class LoginFragment extends Fragment {
 
     ImageView imm;
 
+    ServiceCommentNotifcation serviceComment;
 
     public LoginFragment() {
 
@@ -148,7 +150,7 @@ public class LoginFragment extends Fragment {
     }
 
 
-    public void chercherUserByEmail(final String email , final String mdp) {
+    /*public void chercherUserByEmail(final String email , final String mdp) {
 
          dialog = new Dialog(getContext());
         dialog.setTitle("Connexion en cours");
@@ -220,7 +222,7 @@ public class LoginFragment extends Fragment {
 
         //aq.ajax(url, JSONObject.class,this,"emailCallback");
 
-    }
+    }*/
 
 
 
@@ -240,40 +242,77 @@ public class LoginFragment extends Fragment {
             @Override
             public void onResponse(String response) {
 
-                Gson gson = new Gson();
-                admin = gson.fromJson(response,User.class);
-                admin.setImg(publicUrl+admin.getImg());
+                if (!response.equals("null")) {
+                    /*Gson gson = new Gson();
+                    admin = gson.fromJson(response, User.class);
+                    admin.setImg(publicUrl + admin.getImg());*/
+
+                    JSONObject jsonObject;
+                    try{
+                        jsonObject = new JSONObject(response);
 
 
 
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences(SESSION, MODE_PRIVATE).edit();
-                editor.putBoolean("statut", true);
-                editor.putString("email", admin.getEmail());
-                editor.putString("prenom", admin.getPrenom());
-                editor.putString("nom", admin.getNom());
-                editor.putString("filiere", admin.getFiliere());
-                editor.putString("img", admin.getImg());
-                editor.putInt("groupe", admin.getGroupe());
-                editor.putInt("niveau", admin.getNiveau());
-                editor.commit();
+                    id=jsonObject.getString("_id");
+                    nom=jsonObject.getString("nom");
+                    prenom=jsonObject.getString("prenom");
+                    filiere=jsonObject.getString("filiere");
+                    imgUrl=publicUrl+jsonObject.getString("img");
 
-                chargerMonEmploi();
 
-                dialog.dismiss();
+                    niveau = Integer.parseInt(jsonObject.getString("niveau"));
+                    groupe = Integer.parseInt(jsonObject.getString("groupe"));
 
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                intent.putExtra("type","login");
-                emailText.getText().clear();
-                pass.getText().clear();
+                    admin=new User(id,nom,prenom,email,imgUrl,filiere,groupe,niveau);
 
-                startActivity(intent);
+                        if (serviceComment.SERVICE_IS_RUN == false ){
+                            serviceComment.SERVICE_IS_RUN = true ;
+                            serviceComment.idUsr = admin.getId();
+                            final Intent intentService = new Intent(getContext(),ServiceCommentNotifcation.class);
+                            Toast.makeText(getContext(),"Service Comm started",Toast.LENGTH_LONG).show();
+
+                            getContext().startService(intentService);
+                        }
+
+
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(SESSION, MODE_PRIVATE).edit();
+                    editor.putString("id",admin.getId());
+                    editor.putBoolean("statut", true);
+                    editor.putString("email", admin.getEmail());
+                    editor.putString("prenom", admin.getPrenom());
+                    editor.putString("nom", admin.getNom());
+                    editor.putString("filiere", admin.getFiliere());
+                    editor.putString("img", admin.getImg());
+                    editor.putInt("groupe", admin.getGroupe());
+                    editor.putInt("niveau", admin.getNiveau());
+                    editor.commit();
+
+                    chargerMonEmploi();
+
+                    dialog.dismiss();
+
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    intent.putExtra("type", "login");
+                    emailText.getText().clear();
+                    pass.getText().clear();
+
+                    startActivity(intent);
+
+                    }
+                    catch (JSONException e) {
+
+                    }
+                }
+                else {
+                    verifMdp.setText("veuillez vérifier vos informations");
+                }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),error.toString() + "here",Toast.LENGTH_LONG).show();
 
 
             }
@@ -332,21 +371,10 @@ public class LoginFragment extends Fragment {
 
                     monEmploi = new Emploi(id, maFiliere, niveau, groupe);
 
-                    // Toast.makeText(getApplicationContext(), "sna3t groupe", Toast.LENGTH_LONG).show();
-
                     JSONArray joursArray = myObject.getJSONArray("jours");
-
-                    //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
 
                     String nomJour;
 
-                    /*prgDialog = new ProgressDialog(getApplicationContext());
-                    prgDialog.setMessage("Connexion en cours ...");
-                    prgDialog.setIndeterminate(false);
-                    //prgDialog.setMax(100);
-                    prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    prgDialog.setCancelable(false);
-                    prgDialog.show();*/
 
                     JSONArray seanceArray;
                     for (int i = 0; i < joursArray.length(); i++) {
@@ -367,10 +395,6 @@ public class LoginFragment extends Fragment {
                                 pq = false ;
                             else pq=true;
 
-                        /*if (seance.getString("parQuinzaine").equals("false"))
-                            pq = false;
-                        else
-                            pq = true;*/
                             if (!(matiere.equals(""))) {
                                 Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
                                 jj.getListSeance().add(s);

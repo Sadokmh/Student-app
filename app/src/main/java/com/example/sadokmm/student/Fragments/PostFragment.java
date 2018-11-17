@@ -2,6 +2,7 @@ package com.example.sadokmm.student.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -33,6 +34,7 @@ import com.androidquery.util.Progress;
 import com.example.sadokmm.student.Adapters.PostAdapter;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.R;
+import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,8 +50,10 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView postRv;
     private PostAdapter postAdapter;
-    ArrayList<Post> ll;
+    public static ArrayList<Post> ll;
     ProgressDialog prgDialog;
+
+    ServiceCommentNotifcation mServicee;
 
     private RequestQueue requestQueuePost;
 
@@ -110,19 +114,18 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             if (ll.size() != 0 ) ll.clear();
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject postJson = response.getJSONObject(i);
-                                String id , txtpost, datepost, emailusr;
+                                String id , txtpost, datepost, idusr;
                                 id = postJson.getString("_id");
                                 txtpost = postJson.getString("txtpost");
                                 datepost = postJson.getString("datepost");
-                                emailusr = postJson.getString("emailusr");
+                                idusr = postJson.getString("idusr");
                                 JSONArray imgpost = postJson.getJSONArray("imgpost");
                                 ArrayList<String> imgListPost = new ArrayList<>();
                                     for (int j=0 ; j<imgpost.length() ; j++) {
                                         imgListPost.add(imgpost.getString(j));
                                     }
 
-                                //getImageByUrl(publicUrl + imgpost, i);
-                                Post p = new Post(txtpost, emailusr, imgListPost , id , getContext());
+                                Post p = new Post(txtpost, idusr, imgListPost , id );
                                 p.setDatepost(datepost);
                                 ll.add(0,p);
 
@@ -133,10 +136,13 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             postAdapter.notifyDataSetChanged();
                             //Toast.makeText(getContext(),,Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
-                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+                           Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                         }
+
+
+
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -151,6 +157,8 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             requestQueuePost.getCache().clear();
 
         requestQueuePost.add(jsonArrayRequest);
+
+
 
     }
 

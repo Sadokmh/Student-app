@@ -35,7 +35,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="13dp"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/sadok"
+                android:src="@drawable/ph"
                 />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignTop="@+id/profileImg"
                 android:layout_marginStart="82dp"
-                android:text="Sadok Mourad Mhiri"
+                android:text=""
                 android:textColor="@color/primaryText"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/profileName"
                 android:layout_below="@+id/profileName"
-                android:text="3 lfig"
+                android:text=""
                 />
 
             <TextView
@@ -67,7 +67,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginEnd="11dp"
                 android:layout_marginTop="50dp"
-                android:text="25 oct 2018"
+                android:text=""
                 android:layout_marginBottom="10dp"
                 />
 
@@ -150,8 +150,20 @@
                     android:id="@+id/nbLikes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="20" />
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:text="" />
+
+
+                <TextView
+                    android:id="@+id/nbComms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="112dp"
+                    android:text="" />
 
                 <ImageView
                     android:id="@+id/commentPostButton"

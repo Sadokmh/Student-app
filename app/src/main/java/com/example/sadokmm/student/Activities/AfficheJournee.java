@@ -11,8 +11,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sadokmm.student.Adapters.MainRvAdapter;
+import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.R;
 
+import java.util.ArrayList;
+
+import static com.example.sadokmm.student.Activities.MainActivity.currentHour;
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 
@@ -72,10 +76,16 @@ public class AfficheJournee extends AppCompatActivity {
 
 
             //mAdapter.setMyList((monGroupe.getJourListe().get(jourNum).getListSeance()));
-            mAdapter.setMyList(monEmploi.getJours().get(jourNum).getListSeance());
-            jour.setText(monEmploi.getJours().get(jourNum).getNom());
-            Toast.makeText(this, "taille jours array: " + monEmploi.getJours().size(), Toast.LENGTH_LONG).show();
-
+            if (jourNum == 6 || (jourNum == 5 && currentHour > 12)) {
+                mAdapter.setMyList(monEmploi.getJours().get(0).getListSeance());
+                mAdapter.notifyDataSetChanged();
+                positionJour = 0 ;
+                jour.setText(monEmploi.getJours().get(0).getNom());
+            }
+            else {
+                mAdapter.setMyList(monEmploi.getJours().get(jourNum).getListSeance());
+                jour.setText(monEmploi.getJours().get(jourNum).getNom());
+            }
 
             //passer à la journée suivante
             fleshSuiv.setOnClickListener(new View.OnClickListener() {

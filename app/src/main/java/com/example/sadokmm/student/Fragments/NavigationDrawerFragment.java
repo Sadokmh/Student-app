@@ -97,7 +97,7 @@ public class NavigationDrawerFragment extends Fragment  {
                     }
                     case 2 : {
                         Intent intent = new Intent(getContext(),ProfileActivity.class);
-                        intent.putExtra("email",admin.getEmail());
+                        intent.putExtra("id",admin.getId());
                         getContext().startActivity(intent);
                         break;
                     }

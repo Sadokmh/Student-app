@@ -101,6 +101,7 @@ public class AjoutPost extends AppCompatActivity {
         options.inSampleSize = 5;
 
 
+        TYPE_FILE_OR_IMAGE = "nofile";
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Ajouter une publication");
@@ -161,11 +162,11 @@ public class AjoutPost extends AppCompatActivity {
             prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             prgDialog.setCancelable(true);
             prgDialog.show();
-            Post post = new Post(txtPost.getText().toString(), admin.getEmail(), null , "" , this);
-            if (TYPE_FILE_OR_IMAGE.equals("image"))
-                postPubImage(post.getTxtpost(), post.getEmailusr(), post.getDatepost());
+            Post post = new Post(txtPost.getText().toString(), admin.getId(), null , "" );
+            if (TYPE_FILE_OR_IMAGE.equals("image") || TYPE_FILE_OR_IMAGE.equals("nofile"))
+                postPubImage(post.getTxtpost(), post.getIdusr(), post.getDatepost());
             else
-                postPubFile(post.getTxtpost(), post.getEmailusr(), post.getDatepost());
+                postPubFile(post.getTxtpost(), post.getIdusr(), post.getDatepost());
         }
 
     }
@@ -332,7 +333,7 @@ public class AjoutPost extends AppCompatActivity {
 
     //Post publication to DB
 
-    public void postPubImage(String txtpost, String emailusr, String datepost) throws FileNotFoundException {
+    public void postPubImage(String txtpost, String idusr, String datepost) throws FileNotFoundException {
         try {
             Toast.makeText(this,"ggg",Toast.LENGTH_LONG).show();
             SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl + "student/postp",
@@ -358,7 +359,7 @@ public class AjoutPost extends AppCompatActivity {
 
 
             smr.addStringParam("txtpost", txtpost);
-            smr.addStringParam("emailusr", emailusr);
+            smr.addStringParam("idusr", idusr);
             smr.addStringParam("datepost", datepost);
 
 
@@ -381,7 +382,7 @@ public class AjoutPost extends AppCompatActivity {
 
 
 
-    public void postPubFile(String txtpost, String emailusr, String datepost) throws FileNotFoundException {
+    public void postPubFile(String txtpost, String idusr, String datepost) throws FileNotFoundException {
         try {
             SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, publicUrl + "student/postpwithfile",
                     new Response.Listener<String>() {
@@ -406,7 +407,7 @@ public class AjoutPost extends AppCompatActivity {
 
 
             smr.addStringParam("txtpost", txtpost);
-            smr.addStringParam("emailusr", emailusr);
+            smr.addStringParam("idusr", idusr);
             smr.addStringParam("datepost", datepost);
 
 

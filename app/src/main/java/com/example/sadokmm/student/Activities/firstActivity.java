@@ -2,17 +2,20 @@ package com.example.sadokmm.student.Activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -22,7 +25,6 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.example.sadokmm.student.Adapters.PageAdapterFirst;
 import com.example.sadokmm.student.Objects.Emploi;
@@ -30,6 +32,8 @@ import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.example.sadokmm.student.ServiceActuNotifications;
+import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -48,13 +52,13 @@ public class firstActivity extends AppCompatActivity {
     public static Emploi monEmploi;
 
 
-    public final static String publicUrl = "http://192.168.1.7:8080/";
+
+    public final static String publicUrl = "http://192.168.1.14:8080/";
 
     public static Activity myActivity;
 
     public static List<User> listUser = new ArrayList<>();
 
-    //public static final String MY_SP_FILE = "com.example.sadokmm.student.activities.monemploi";
 
     public static User admin ;
 
@@ -68,13 +72,24 @@ public class firstActivity extends AppCompatActivity {
 
     AQuery aq;
 
+    private ServiceActuNotifications serviceActu;
+    private ServiceCommentNotifcation serviceComment;
+    private boolean mBound = false;
+
+    public static Context contextFirst;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
 
+
+
         aq=new AQuery(this);
+        contextFirst = this;
 
 
         SharedPreferences sp = getSharedPreferences(SESSION, Context.MODE_PRIVATE);
@@ -85,20 +100,25 @@ public class firstActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(this,"Bienvenue",Toast.LENGTH_LONG).show();
 
 
-            if (!isNetworkAvailable()) {
-                admin = new User("0", sp.getString("nom", "nom"), sp.getString("prenom", "prenom"), sp.getString("email", "email"),  sp.getString("img","img"), sp.getString("filiere", "filiere"), sp.getInt("groupe", 0), sp.getInt("niveau", 0));
+                admin = new User(sp.getString("id" , "id"), sp.getString("nom", "nom"), sp.getString("prenom", "prenom"), sp.getString("email", "email"),  sp.getString("img","img"), sp.getString("filiere", "filiere"), sp.getInt("groupe", 0), sp.getInt("niveau", 0));
+            if (serviceComment.SERVICE_IS_RUN == false ){
+                serviceComment.SERVICE_IS_RUN = true ;
+                serviceComment.idUsr = admin.getId();
+                final Intent intentService = new Intent(getApplicationContext(),ServiceCommentNotifcation.class);
+                Toast.makeText(getApplicationContext(),"Service Comm started",Toast.LENGTH_LONG).show();
+
+                startService(intentService);
+            }
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("type","first");
                 startActivity(intent);
-            }
 
-            else {
-                chercherUserByEmail(sp.getString("email","email"));
 
-            }
+
+
+
         }
 
 
@@ -118,6 +138,7 @@ public class firstActivity extends AppCompatActivity {
 
 
 
+
     }
 
 
@@ -132,10 +153,10 @@ public class firstActivity extends AppCompatActivity {
     }
 
 
-    public void chercherUserByEmail(final String email) {
+    public void chercherUserById(final String idd) {
 
 
-        String url= publicUrl +"student/getuser/"+email;
+        String url= publicUrl +"student/getuser/"+idd;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -157,22 +178,22 @@ public class firstActivity extends AppCompatActivity {
                     admin=new User(id,nom,prenom,email,imgUrl,filiere,groupe,niveau);
 
 
+                    SharedPreferences.Editor editor = getSharedPreferences(SESSION,MODE_PRIVATE).edit();
+                    editor.putBoolean("statut",true);
+                    editor.commit();
+
+
 
 
                     chargerMonEmploi();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("type","first");
                     startActivity(intent);
-                    //imm.setImageBitmap(img);
 
 
 
 
-                    //Intent intent = new Intent(getContext(), MainActivity.class);
 
-                    //admin=new User(id,nom,prenom,email.getText().toString(),mdp,img,filiere,groupe,niveau);
-
-                    //startActivity(intent);
                 }
 
                 catch (JSONException e) {
@@ -203,10 +224,7 @@ public class firstActivity extends AppCompatActivity {
                 String pas = jsonObject.getString("pass");
 
 
-                    //Shared Preferences to save connectUser
-                    /*SharedPreferences.Editor editor = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE).edit();
-                    editor.putString("connectUser", email.getText().toString());
-                    editor.commit();*/
+
 
 
                     email=jsonObject.getString("email");
@@ -234,11 +252,7 @@ public class firstActivity extends AppCompatActivity {
 
 
 
-                    //Intent intent = new Intent(getContext(), MainActivity.class);
 
-                    //admin=new User(id,nom,prenom,email.getText().toString(),mdp,img,filiere,groupe,niveau);
-
-                    //startActivity(intent);
                 }
 
             catch (JSONException e) {
@@ -277,7 +291,7 @@ public class firstActivity extends AppCompatActivity {
 
         String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
         //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
-        Toast.makeText(this,url,Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,url,Toast.LENGTH_LONG).show();
 
         prgDialog = new ProgressDialog(this);
         prgDialog.setMessage("Connexion en cours ...");
@@ -288,19 +302,15 @@ public class firstActivity extends AppCompatActivity {
         prgDialog.show();
 
 
-//        Snackbar.make(getCurrentFocus(),url,Snackbar.LENGTH_LONG).show();
 
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject myObject) {
 
 
-                Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_LONG).show();
 
                 try {
 
-                    //JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    //JSONObject myObject = jsonArray.getJSONObject(0);
 
 
                     String id = myObject.getString("_id");
@@ -310,21 +320,12 @@ public class firstActivity extends AppCompatActivity {
 
                     monEmploi = new Emploi(id, maFiliere, niveau, groupe);
 
-                    // Toast.makeText(getApplicationContext(), "sna3t groupe", Toast.LENGTH_LONG).show();
 
                     JSONArray joursArray = myObject.getJSONArray("jours");
 
-                    //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
 
                     String nomJour;
 
-                    /*prgDialog = new ProgressDialog(getApplicationContext());
-                    prgDialog.setMessage("Connexion en cours ...");
-                    prgDialog.setIndeterminate(false);
-                    //prgDialog.setMax(100);
-                    prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    prgDialog.setCancelable(false);
-                    prgDialog.show();*/
 
                     JSONArray seanceArray;
                     for (int i = 0; i < joursArray.length(); i++) {
@@ -345,10 +346,7 @@ public class firstActivity extends AppCompatActivity {
                                 pq = false ;
                             else pq=true;
 
-                        /*if (seance.getString("parQuinzaine").equals("false"))
-                            pq = false;
-                        else
-                            pq = true;*/
+
                             if (!(matiere.equals(""))) {
                                 Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
                                 jj.getListSeance().add(s);
@@ -371,7 +369,6 @@ public class firstActivity extends AppCompatActivity {
 
 
 
-                    Toast.makeText(getApplicationContext(),monEmploiEnJson,Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
 
                     Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
@@ -382,12 +379,28 @@ public class firstActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_LONG).show();
 
             }
         });
 
         requestQueue.add(jsonObjectRequest);
+
+    }
+
+
+
+    private void lancerServices(){
+
+
+
+
+       /* if (serviceActu.SERVICE_IS_RUN == false ){
+            serviceActu.SERVICE_IS_RUN = true ;
+            final Intent intentService = new Intent(getApplicationContext(),ServiceCommentNotifcation.class);
+            Toast.makeText(getApplicationContext(),"Service Actu started",Toast.LENGTH_LONG).show();
+
+            startService(intentService);
+        }*/
 
     }
 

@@ -128,7 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView profilName,filiere,textPost,datePost,nbLikesView;
+        private TextView profilName,filiere,textPost,datePost,nbLikesView,nbCommView;
         private ImageView imgPost,likePost,commentPost;
         private CircleImageView imgUsr;
         private ViewPager imgpostViewer;
@@ -149,6 +149,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
              imgUsr=(CircleImageView) itemView.findViewById(R.id.profileImg);
             textComm = (EditText) itemView.findViewById(R.id.commentPostText);
             nbLikesView = (TextView) itemView.findViewById(R.id.nbLikes);
+            nbCommView = (TextView) itemView.findViewById(R.id.nbComms);
             //salleLayout=(LinearLayout)itemView.findViewById(R.id.salleLayout);
 
         }
@@ -161,10 +162,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
 
         final Post post=myListPost.get(i);
-        String url = publicUrl + "student/getuser/"+post.getEmailusr();
+        String url = publicUrl + "student/getuser/"+post.getIdusr();
         JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+
 
                 String id , email , nom , prenom , filiere , mdp , imgUrl;
                 int niveau , groupe;
@@ -212,7 +214,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
 
 
-                    viewHolder.nbLikesView.setText(myListPost.get(i).getListLikes().size()+" personnes");
+                    viewHolder.nbCommView.setText(String.valueOf(myListPost.get(i).getCommentList().size()));
+
+
+                    viewHolder.nbLikesView.setText(String.valueOf(myListPost.get(i).getListLikes().size()));
 
 
                     viewHolder.likePost.setOnClickListener(new View.OnClickListener() {
@@ -224,8 +229,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                                 viewHolder.likePost.setImageResource(R.drawable.ic_like_color);
 
                                 if (myListPost.get(i).getListLikes().size() > 0 )
-                                textNbLikes = "Vous et " + myListPost.get(i).getListLikes().size()+" autres personnes";
-                                else textNbLikes = "1 Vous aimez ça" ;
+                                textNbLikes = String.valueOf(myListPost.get(i).getListLikes().size()+1);
+                                else textNbLikes = String.valueOf(myListPost.get(i).getListLikes().size()+1) ;
 
                                 viewHolder.nbLikesView.setText(textNbLikes);
 
@@ -236,14 +241,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                                 viewHolder.likePost.setImageResource(R.drawable.ic_like_not_clicked);
 
                                 //if (myListPost.get(i).)
-                                viewHolder.nbLikesView.setText( (myListPost.get(i).getListLikes().size() - 1)+"  personnes");
+                                viewHolder.nbLikesView.setText( String.valueOf(myListPost.get(i).getListLikes().size() - 1));
                             }
 
                         }
                     });
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Toast.makeText(layoutInflater.getContext(),e.toString(),Toast.LENGTH_LONG).show();
                 }
 
 
@@ -268,7 +273,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
-                            intent.putExtra("email",myListPost.get(i).getEmailusr());
+                            intent.putExtra("id",myListPost.get(i).getIdusr());
                             layoutInflater.getContext().startActivity(intent);
                         }
                     });
@@ -277,7 +282,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
-                            intent.putExtra("email",myListPost.get(i).getEmailusr());
+                            intent.putExtra("id",myListPost.get(i).getIdusr());
                             layoutInflater.getContext().startActivity(intent);
                         }
                     });
@@ -288,7 +293,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(layoutInflater.getContext(),error.toString(),Toast.LENGTH_LONG).show();
             }
         });
 
@@ -312,7 +317,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
     public void likePost(String idpost, final int position) {
 
-        String url = publicUrl + "student/like/" + idpost + "/" + admin.getEmail();
+        String url = publicUrl + "student/like/" + idpost + "/" + admin.getId();
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
@@ -341,7 +346,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
     public void unlikePost(String idpost , final int position){
 
-        String url = publicUrl + "student/likeremove/" + idpost + "/" + admin.getEmail();
+        String url = publicUrl + "student/likeremove/" + idpost + "/" + admin.getId();
 
         StringRequest stringRequest = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
             @Override

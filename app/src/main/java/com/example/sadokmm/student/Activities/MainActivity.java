@@ -39,6 +39,7 @@ import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
+import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 import com.google.gson.Gson;
 //import com.google.gson.Gson;
 
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public static Date laDate;
     public static int jourNum;
     public static Seance seanceActuelle,seanceVide,weekend;
+    public static int currentHour ;
     //public static Emploi monEmploi;
 
     private TabLayout tabLayout;
@@ -86,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
 
-    //public static final String MY_SP_FILE = "com.example.sadokmm.student.activities.monemploi";
-
+    ServiceCommentNotifcation serviceComment;
 
     private TextView afficheJournee;
 
@@ -140,20 +141,16 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.settUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar);
 
-        weekend = new Seance("Bon Weekend " , "","","",0,false);
-        seanceVide = new Seance("Pas de cours pour l'instant","","","",0,false);
+        weekend = new Seance("Bon Weekend " , "","","",1,false);
+        seanceVide = new Seance("Pas de cours pour l'instant","","","",1,false);
         seanceActuelle = seanceVide;
         getJourNum();
         getTime();
 
         if (isNetworkAvailable()) {
 
+            chargerMonEmploi();
 
-
-           /* String type = getIntent().getExtras().getString("type");
-            if (type.equals("parametres")){
-
-            }*/
 
         }
 
@@ -183,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     }
 
     @Override
@@ -200,9 +196,6 @@ public class MainActivity extends AppCompatActivity {
         int groupe = admin.getGroupe();
 
         String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
-        //String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
-        Toast.makeText(this,url,Toast.LENGTH_LONG).show();
-
         prgDialog = new ProgressDialog(this);
         prgDialog.setMessage("Connexion en cours ...");
         prgDialog.setIndeterminate(false);
@@ -217,13 +210,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject myObject) {
 
-
-                Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_LONG).show();
-
                 try {
-
-                    //JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    //JSONObject myObject = jsonArray.getJSONObject(0);
 
 
                     String id = myObject.getString("_id");
@@ -261,10 +248,7 @@ public class MainActivity extends AppCompatActivity {
                                 pq = false ;
                             else pq=true;
 
-                        /*if (seance.getString("parQuinzaine").equals("false"))
-                            pq = false;
-                        else
-                            pq = true;*/
+
                             if (!(matiere.equals(""))) {
                                 Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
                                 jj.getListSeance().add(s);
@@ -272,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         monEmploi.getJours().add(jj);
-                        //Toast.makeText(getApplicationContext(), "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
-                       // prgDialog.dismiss();
 
                     }
 
@@ -289,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                    Toast.makeText(getApplicationContext(),monEmploiEnJson,Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
 
                     Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
@@ -322,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
 
         {
 
-            Toast.makeText(this, "not null", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "not null", Toast.LENGTH_LONG).show();
 
             try {
 
@@ -337,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
                 monEmploi = new Emploi(id, maFiliere, niveau, groupe);
 
-                Toast.makeText(this, "sna3t groupe", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "sna3t groupe", Toast.LENGTH_LONG).show();
 
                 JSONArray joursArray = myObject.getJSONArray("jours");
 
@@ -383,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     monEmploi.getJours().add(jj);
-                    Toast.makeText(this, "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, "Emploi ajouté avec succées", Toast.LENGTH_LONG).show();
                     prgDialog.dismiss();
 
                 }
@@ -397,14 +378,14 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
 
 
-                Toast.makeText(this,monEmploi.getJours().size()+" ",Toast.LENGTH_LONG).show();
+                //Toast.makeText(this,monEmploi.getJours().size()+" ",Toast.LENGTH_LONG).show();
             } catch (JSONException e) {
 
                 Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
 
             }
         } else {
-            Toast.makeText(this, "null", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "null", Toast.LENGTH_LONG).show();
         }
 
 
@@ -417,12 +398,16 @@ public class MainActivity extends AppCompatActivity {
     public String getStringDate() {
         Date mydate = Calendar.getInstance().getTime();
 
+
+        SimpleDateFormat sdfHour = new SimpleDateFormat("HH");
+        currentHour = Integer.parseInt(sdfHour.format(mydate));
+
         DateFormat df = new SimpleDateFormat("EEE");
         String date = df.format(mydate);
 
         DateFormat currentDf = new SimpleDateFormat("HH:mm");
         currentTime = currentDf.format(mydate);
-        Toast.makeText(this, "current time: " + currentTime, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "current time: " + currentTime, Toast.LENGTH_LONG).show();
 
         DateFormat currentFulldf = new SimpleDateFormat("EEEEEE, d MMM yyyy");
         currentFullTime = currentFulldf.format(mydate);
@@ -438,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void getTime() {
         String pattern = "HH:mm";
+
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         try {
 
@@ -609,74 +595,12 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-            // Add ImageRequest to the RequestQueue
+            // Add ImagFeRequest to the RequestQueue
             requestQueue.add(imageRequest);
         }
 
 
-        public void chargerUserFromRegister(String emailusr , String pass){
 
-            String url = publicUrl + "student/getuser/"+emailusr;
-
-            prgDialog = new ProgressDialog(this);
-            prgDialog.setMessage("Connexion en cours ...");
-            prgDialog.setIndeterminate(false);
-            //prgDialog.setMax(100);
-            prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            prgDialog.setCancelable(false);
-            prgDialog.show();
-
-            JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-
-                    String id = null, email = null, nom = null, prenom = null, filiere = null, mdp = null, imgUrl = null;
-                    int niveau = 0, groupe = 0;
-
-
-                    try {
-                        id = jsonObject.getString("_id");
-                        nom = jsonObject.getString("nom");
-                        prenom = jsonObject.getString("prenom");
-                        filiere = jsonObject.getString("filiere");
-                        imgUrl = publicUrl + jsonObject.getString("img");
-                        email = jsonObject.getString("email");
-                        niveau = Integer.parseInt(jsonObject.getString("niveau"));
-                        groupe = Integer.parseInt(jsonObject.getString("groupe"));
-                        admin = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
-
-                        SharedPreferences.Editor editor=getSharedPreferences(SESSION,Context.MODE_PRIVATE).edit();
-                        editor.putBoolean("statut",true);
-                        editor.putString("email",admin.getEmail());
-                        editor.putString("prenom",admin.getPrenom());
-                        editor.putString("nom" , admin.getNom());
-                        editor.putString("filiere" , admin.getFiliere());
-                        editor.putString("img",admin.getImg());
-                        editor.putInt("groupe",admin.getGroupe());
-                        editor.putInt("niveau",admin.getNiveau());
-                        editor.commit();
-
-                        prgDialog.dismiss();
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-            });
-
-            requestQueue.add(jsonObjectRequest);
-
-            //return user;
-
-        }
 
 
 
