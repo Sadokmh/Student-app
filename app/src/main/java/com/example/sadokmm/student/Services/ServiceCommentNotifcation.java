@@ -11,6 +11,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonArrayRequest;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.example.sadokmm.student.Activities.firstActivity.contextFirst;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class ServiceCommentNotifcation extends Service {
@@ -42,7 +44,20 @@ public class ServiceCommentNotifcation extends Service {
     public static String idUsr;
     private ArrayList<InfoPostCom> listInfo = new ArrayList<>();
 
+    public static Boolean verif ;
+
     private final String  POST_ADMIN_FILE = "post_file";
+
+    AQuery aq ;
+    private RequestQueue requestQueueNouvCom ;
+    private RequestQueue requestQueueCherchUsr ;
+    private RequestQueue requestQueuePostUser ;
+    private RequestQueue requestQueueChargLikes;
+    private final String urlChargLikes = publicUrl + "student/postlikes/";
+    private final String urlNouvCom = publicUrl + "student/findpostcomment";
+    private final String urlCherchUser= publicUrl +"student/getuser/";
+    private final String urlPostUser = publicUrl + "student/findpostuser";
+
 
 
     TimerTask timerTask = new TimerTask() {
@@ -53,6 +68,7 @@ public class ServiceCommentNotifcation extends Service {
             SERVICE_IS_RUN = true;
             for (int i = 0; i < listInfo.size(); i++) {
                 chercherNouvComm(listInfo.get(i).getIdPoste(), listInfo.get(i).getIdCom());
+                chargerLikes(listInfo.get(i).getIdPoste(),listInfo.get(i).getLike());
             }
 
 
@@ -70,8 +86,12 @@ public class ServiceCommentNotifcation extends Service {
     public void onCreate() {
 
         super.onCreate();
-        //composerMsg("Sadok","Mhiri","https://cdn-images-1.medium.com/max/1000/1*L6n8KHbg7qaOX1j4LhJcHA.jpeg","tetetete");
 
+        aq = new AQuery(getApplicationContext());
+        requestQueueNouvCom = Volley.newRequestQueue(getApplicationContext());
+        requestQueueCherchUsr = Volley.newRequestQueue(getApplicationContext());
+        requestQueuePostUser = Volley.newRequestQueue(getApplicationContext());
+        requestQueueChargLikes = Volley.newRequestQueue(getApplicationContext());
 
 
 
@@ -115,10 +135,10 @@ public class ServiceCommentNotifcation extends Service {
 
     public void chargerPost(){
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        String url = publicUrl + "student/findpostuser";
 
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, url,  new Response.Listener<String>() {
+
+
+        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, urlPostUser,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 listPost = new ArrayList<>();
@@ -168,7 +188,7 @@ public class ServiceCommentNotifcation extends Service {
         });
 
         smr.addStringParam("iduser",idUsr);
-        requestQueue.add(smr);
+        requestQueuePostUser.add(smr);
 
 
     }
@@ -188,12 +208,24 @@ public class ServiceCommentNotifcation extends Service {
 
             if (listPost.get(i).getIdusr().equals(user_id)) {
                 if (listPost.get(i).getCommentList().size() == 0) {
-                    InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), "null");
-                    listInfo.add(info);
+                    if (listPost.get(i).getCommentList().size() == 0) {
+                        InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), "null", "null");
+                        listInfo.add(info);
+                    }
+                    else {
+                        InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), "null", listPost.get(i).getListLikes().get(listPost.get(i).getListLikes().size() - 1));
+                        listInfo.add(info);
+                    }
                 }
                 else {
-                    InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), listPost.get(i).getCommentList().get(listPost.get(i).getCommentList().size() - 1).getId());
-                    listInfo.add(info);
+                    if (listPost.get(i).getListLikes().size() == 0) {
+                        InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), listPost.get(i).getCommentList().get(listPost.get(i).getCommentList().size() - 1).getId(), "null");
+                        listInfo.add(info);
+                    }
+                    else {
+                        InfoPostCom info = new InfoPostCom(listPost.get(i).getId(), listPost.get(i).getCommentList().get(listPost.get(i).getCommentList().size() - 1).getId(), listPost.get(i).getListLikes().get(listPost.get(i).getListLikes().size() - 1));
+                        listInfo.add(info);
+                    }
                 }
             }
             saveToSharedPref(listInfo);
@@ -211,11 +243,71 @@ public class ServiceCommentNotifcation extends Service {
 
 
 
+
+
+        //charger les j'aimes de la publication
+        public void chargerLikes(final String idPost , final String like){
+
+
+
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, urlChargLikes + idPost, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+
+
+
+                    // Toast.makeText(context,response.length()+"" , Toast.LENGTH_LONG).show();
+
+                    try {
+                            if (response.length() != 0) {
+                                String usrId = response.get(response.length()-1).toString();
+                                if (!usrId.equals(like)) {
+                                    for (int i = 0; i < listInfo.size(); i++) {
+                                        if (listInfo.get(i).getIdPoste().equals(idPost)) {
+                                            listInfo.get(i).setLike(usrId);
+                                            saveToSharedPref(listInfo);
+                                            break;
+                                        }
+                                    }
+                                    if (!usrId.equals(idUsr)) {
+
+                                        chercherUserById(usrId,idPost,"like");
+
+                                    }
+
+                                }
+
+                            }
+
+
+
+
+                    }
+                    catch (JSONException e) {
+
+                    }
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+
+            //requestQueueChargLikes.getCache().clear();
+            requestQueueChargLikes.add(jsonArrayRequest);
+
+        }
+
+
+
+
     public void chercherNouvComm(final String idPost , String idCom) {
 
-        String url = publicUrl + "student/findpostcomment";
-        final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+        requestQueueNouvCom = Volley.newRequestQueue(getApplicationContext());
+        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, urlNouvCom, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
@@ -241,7 +333,7 @@ public class ServiceCommentNotifcation extends Service {
 
                             if (!id_user.equals(idUsr)) {
 
-                                chercherUserById(id_user,idPost);
+                                chercherUserById(id_user,idPost,"comment");
 
                             }
 
@@ -262,7 +354,7 @@ public class ServiceCommentNotifcation extends Service {
         smr.addStringParam("idpost",idPost);
         smr.addStringParam("idcomment",idCom);
 
-        requestQueue.add(smr);
+        requestQueueNouvCom.add(smr);
 
     }
 
@@ -303,13 +395,13 @@ public class ServiceCommentNotifcation extends Service {
 
 
 
-    public void chercherUserById(final String idd , final String idPost) {
+    public void chercherUserById(final String idd , final String idPost , final String type) {
 
 
-        String url= publicUrl +"student/getuser/"+idd;
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlCherchUser+idd, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
 
@@ -321,10 +413,15 @@ public class ServiceCommentNotifcation extends Service {
                     imgUrl=publicUrl+jsonObject.getString("img");
 
 
+                    String msg = "";
 
-
-
-                    composerMsg(nom , prenom , imgUrl , idPost );
+                    if (type.equals("comment")) {
+                        msg = prenom + " " + nom + " à commenté votre publication" ;
+                    }
+                    else {
+                        msg = prenom + " " + nom + " à aimé votre publication" ;
+                    }
+                    composerMsg(msg, imgUrl , idPost );
 
 
 
@@ -343,19 +440,19 @@ public class ServiceCommentNotifcation extends Service {
             }
         });
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(jsonObjectRequest);
+
+        requestQueueCherchUsr.add(jsonObjectRequest);
 
 
     }
 
 
 
-    private void composerMsg(String nom , String prenom , final String imgUrl , final String idPost) {
+    private void composerMsg(final String msg , final String imgUrl , final String idPost) {
 
-        final String msg = prenom + " " + nom + " a commenté votre publication";
 
-        AQuery aq = new AQuery(this);
+
+
         aq.ajax(imgUrl, Bitmap.class, 0, new AjaxCallback<Bitmap>() {
             @Override
             public void callback(String url, Bitmap object, AjaxStatus status) {
@@ -366,18 +463,6 @@ public class ServiceCommentNotifcation extends Service {
             }
         });
 
-
-        // creat new intent
-        /*Intent intent = new Intent();
-        //set the action that will receive our broadcast
-        intent.setAction("com.example.sadokmm.student.Broadcasts");
-        // add data to the bundle
-        intent.putExtra("liste", msg);
-        intent.putExtra("img",imgUrl);
-        intent.putExtra("idpost",idPost);
-        // send the data to broadcast
-        sendBroadcast(intent);*/
-        //delay for 50000ms
 
 
     }

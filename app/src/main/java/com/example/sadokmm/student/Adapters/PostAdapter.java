@@ -1,7 +1,6 @@
 package com.example.sadokmm.student.Adapters;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -13,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidquery.AQuery;
-import com.example.sadokmm.student.Activities.CommentaireActivity;
+import com.example.sadokmm.student.Activities.PostActivity;
 import com.example.sadokmm.student.Activities.ProfileActivity;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.Objects.User;
@@ -43,10 +44,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable  {
 
 
     private List<Post> myListPost;
+    private List<Post> listPost;
+
     private LayoutInflater layoutInflater;
 
     private AQuery aq;
@@ -62,6 +65,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     public PostAdapter(Context context) {
         layoutInflater=LayoutInflater.from(context);
         myListPost=new ArrayList<>();
+        listPost=new ArrayList<>();
         aq=new AQuery(context);
         requestQueueUserPost = Volley.newRequestQueue(layoutInflater.getContext());
         requestQueueLikePost = Volley.newRequestQueue(layoutInflater.getContext());
@@ -106,7 +110,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
 
 
     public void setMyList(List<Post> list){
-        myListPost=list;
+        listPost = list ;
+        myListPost.addAll(listPost);
         notifyItemRangeChanged(0,list.size());
     }
 
@@ -123,6 +128,40 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
     public void setClickFromProfile(Boolean clickFromProfile) {
         this.clickFromProfile = clickFromProfile;
     }
+
+    @Override
+    public Filter getFilter() {
+        return postFilter;
+    }
+
+    private Filter postFilter = new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<Post> filteredList = new ArrayList<>();
+            if (charSequence == null || charSequence.length() == 0) {
+                filteredList.addAll(listPost);
+            }
+            else {
+                String filterPattern = charSequence.toString().toLowerCase().trim();
+                for (Post post : listPost){
+                    if (post.getTxtpost().toLowerCase().contains(filterPattern)){
+                        filteredList.add(post);
+                    }
+                }
+            }
+            FilterResults results=new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            myListPost.clear();
+            myListPost.addAll((List<Post>)filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 
     //
 
@@ -201,8 +240,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>  {
                         public void onClick(View view) {
                             try {
 
-                            Intent intent = new Intent(layoutInflater.getContext(), CommentaireActivity.class);
+                            Intent intent = new Intent(layoutInflater.getContext(), PostActivity.class);
                             intent.putExtra("idpost",post.getId());
+                            intent.putExtra("idusr",post.getIdusr());
                             layoutInflater.getContext().startActivity(intent);
 
                             }

@@ -1,6 +1,11 @@
 package com.example.sadokmm.student.Fragments;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,7 +35,11 @@ import com.example.sadokmm.student.Activities.SalleActivity;
 import com.example.sadokmm.student.Adapters.ActuAdapter;
 import com.example.sadokmm.student.Adapters.ImageAdapter;
 import com.example.sadokmm.student.Objects.Actualite;
+import com.example.sadokmm.student.Objects.Emploi;
+import com.example.sadokmm.student.Objects.Jour;
+import com.example.sadokmm.student.Objects.Seance;
 import com.example.sadokmm.student.R;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -40,12 +49,14 @@ import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.sadokmm.student.Activities.MainActivity.currentHour;
 import static com.example.sadokmm.student.Activities.MainActivity.currentSession;
 import static com.example.sadokmm.student.Activities.MainActivity.jourNum;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceActuelle;
 import static com.example.sadokmm.student.Activities.MainActivity.seanceVide;
 import static com.example.sadokmm.student.Activities.MainActivity.weekend;
+import static com.example.sadokmm.student.Activities.firstActivity.EMPLOI_FILE;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
@@ -75,7 +86,7 @@ public class TimeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_time,container,false);
-        actuelle(view);
+
 
         actuRv = (RecyclerView) view.findViewById(R.id.actuRv);
         actuAdapter = new ActuAdapter(getContext());
@@ -83,6 +94,37 @@ public class TimeFragment extends Fragment {
 
 
         listeAct = new ArrayList<>();
+
+        if (isNetworkAvailable()) {
+
+            chargerMonEmploi(view);
+
+
+        }
+
+        else {
+
+            Toast.makeText(getContext(),"non connecté !",Toast.LENGTH_SHORT).show();
+
+
+            SharedPreferences sp=getContext().getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE);
+            String monemploi = sp.getString("emploi","a");
+
+            if (monemploi.equals("a")) {
+                Toast.makeText(getContext(),"Pas d'emploi enregistré " , Toast.LENGTH_LONG).show();
+            }
+
+            else {
+
+                Gson gson = new Gson();
+
+                monEmploi = gson.fromJson(monemploi, Emploi.class);
+                actuelle(view);
+
+            }
+
+        }
+
         chargerActu();
 
 
@@ -337,6 +379,127 @@ public class TimeFragment extends Fragment {
 
     }
 
+
+
+
+
+
+    public void chargerMonEmploi(final View view) {
+
+        String filiere = admin.getFiliere();
+        int niveau = admin.getNiveau();
+        int groupe = admin.getGroupe();
+
+        String url = publicUrl + "student/getemploi/"+filiere+"/"+niveau+"/"+groupe;
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        /*prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Connexion en cours ...");
+        prgDialog.setIndeterminate(false);
+        //prgDialog.setMax(100);
+        prgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        prgDialog.setCancelable(false);
+        prgDialog.show();*/
+
+
+
+        JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject myObject) {
+
+                try {
+
+
+                    String id = myObject.getString("_id");
+                    String maFiliere = myObject.getString("filiere");
+                    int niveau = Integer.parseInt(myObject.getString("niveau"));
+                    int groupe = Integer.parseInt(myObject.getString("groupe"));
+
+                    monEmploi = new Emploi(id, maFiliere, niveau, groupe);
+
+                    // Toast.makeText(getApplicationContext(), "sna3t groupe", Toast.LENGTH_LONG).show();
+
+                    JSONArray joursArray = myObject.getJSONArray("jours");
+
+                    //Toast.makeText(this, "sna3t groupejour", Toast.LENGTH_LONG).show();
+
+                    String nomJour;
+
+
+                    JSONArray seanceArray;
+                    for (int i = 0; i < joursArray.length(); i++) {
+                        nomJour = joursArray.getJSONObject(i).getString("nom");
+                        Jour jj = new Jour(nomJour);
+                        seanceArray = joursArray.getJSONObject(i).getJSONArray("seances");
+
+                        for (int j = 0; j < seanceArray.length(); j++) {
+                            JSONObject seance = seanceArray.getJSONObject(j);
+                            String matiere = seance.getString("mat");
+                            String enseignant = seance.getString("enseignant");
+                            String salle = seance.getString("salle");
+                            int numSeance = Integer.parseInt(seance.getString("numseance"));
+                            String type = seance.getString("type");
+                            String pqn= seance.getString("pq");
+                            Boolean pq;
+                            if (pqn.equals("false"))
+                                pq = false ;
+                            else pq=true;
+
+
+                            if (!(matiere.equals(""))) {
+                                Seance s = new Seance(matiere, enseignant, salle, type, numSeance, pq);
+                                jj.getListSeance().add(s);
+                            };
+
+                        }
+                        monEmploi.getJours().add(jj);
+
+                    }
+
+                    //Enregistrer une copie local de l'emploi sur le téléphone
+                    Gson gson = new Gson();
+                    String monEmploiEnJson = gson.toJson(monEmploi);
+
+                    SharedPreferences.Editor editor=getContext().getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+                    editor.putString("emploi",monEmploiEnJson);
+                    editor.commit();
+
+                    actuelle(view);
+
+
+
+
+                } catch (JSONException e) {
+
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+    }
+
+
+
+
+    //test connexion
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+
+
+    }
 
 
 }

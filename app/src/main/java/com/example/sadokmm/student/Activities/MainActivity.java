@@ -1,23 +1,22 @@
 package com.example.sadokmm.student.Activities;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -32,14 +31,11 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.example.sadokmm.student.Adapters.PageAdapterMain;
 import com.example.sadokmm.student.Fragments.NavigationDrawerFragment;
-import com.example.sadokmm.student.Fragments.TimeFragment;
 import com.example.sadokmm.student.Objects.Emploi;
 import com.example.sadokmm.student.Objects.Info;
 import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
-import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
-import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 import com.google.gson.Gson;
 //import com.google.gson.Gson;
 
@@ -56,11 +52,10 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.sadokmm.student.Activities.firstActivity.EMPLOI_FILE;
-import static com.example.sadokmm.student.Activities.firstActivity.SESSION;
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
 import static com.example.sadokmm.student.Activities.firstActivity.monEmploi;
 import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
-import static com.example.sadokmm.student.Fragments.TimeFragment.afficheBtn;
+import static com.example.sadokmm.student.Fragments.PostFragment.postAdapter;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -88,11 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
 
-    ServiceCommentNotifcation serviceComment;
-
-    private TextView afficheJournee;
-
-    private TextView mmm;
+    public static android.support.v7.widget.SearchView searchView;
+    private int currentFragment;
 
 
 
@@ -126,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout=(TabLayout)findViewById(R.id.tabLayoutMain);
         viewPager=(ViewPager) findViewById(R.id.viewPagerMain);
 
-        afficheJournee = (TextView) findViewById(R.id.afficheJournee);
 
         tabLayout.addTab(tabLayout.newTab().setText(""));
         tabLayout.addTab(tabLayout.newTab().setText(""));
@@ -135,46 +126,20 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(pageAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        searchView = new SearchView(this);
 
 
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.settUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar);
 
-        weekend = new Seance("Bon Weekend " , "","","",1,false);
-        seanceVide = new Seance("Pas de cours pour l'instant","","","",1,false);
+        weekend = new Seance("Bon Weekend " , "","","",0,false);
+        seanceVide = new Seance("Pas de cours pour l'instant","","","",0,false);
         seanceActuelle = seanceVide;
         getJourNum();
         getTime();
 
-        if (isNetworkAvailable()) {
 
-            chargerMonEmploi();
-
-
-        }
-
-        else {
-
-            Toast.makeText(this,"non connecté !",Toast.LENGTH_SHORT).show();
-
-
-            SharedPreferences sp=getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE);
-            String monemploi = sp.getString("emploi","a");
-
-            if (monemploi.equals("a")) {
-                Toast.makeText(this,"Pas d'emploi enregistré " , Toast.LENGTH_LONG).show();
-            }
-
-            else {
-
-                Gson gson = new Gson();
-
-                monEmploi = gson.fromJson(monemploi, Emploi.class);
-
-            }
-
-        }
 
 
 
@@ -529,16 +494,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //test connexion
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-
-
-    }
 
 
 
@@ -603,10 +558,57 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.my_menu,menu);
+
+        MenuItem search=menu.findItem(R.id.search_action);
+        search.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Intent searchIntent = new Intent(getApplicationContext(),SearchActivity.class);
+                if (viewPager.getCurrentItem() == 0) startActivity(searchIntent);
+                return false;
+            }
+        });
+        searchView=(android.support.v7.widget.SearchView)search.getActionView();
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*if (viewPager.getCurrentItem() == 0 ) {
+
+                }*/
+                Intent searchIntent = new Intent(getApplicationContext(),SearchActivity.class);
+                startActivity(searchIntent);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                currentFragment = viewPager.getCurrentItem();
+
+
+                if (currentFragment == 1) {
+                    postAdapter.getFilter().filter(s);
+                }
 
 
 
 
+                return false;
+            }
 
 
+            });
+        return true;
+    }
 }

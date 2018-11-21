@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
 import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Activities.PostActivity;
+import com.example.sadokmm.student.Objects.Post;
 
 public class NotificationComment {
 
@@ -37,7 +39,8 @@ public class NotificationComment {
     public void createNotification()
     {
         /**Creates an explicit intent for an Activity in your app**/
-        Intent resultIntent = new Intent(mContext , MainActivity.class);
+        Intent resultIntent = new Intent(mContext , PostActivity.class);
+        resultIntent.putExtra("idpost",idPoste);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,

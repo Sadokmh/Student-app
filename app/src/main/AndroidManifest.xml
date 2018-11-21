@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.CommentaireActivity" />
+        <activity android:name=".Activities.PostActivity" />
         <activity android:name=".Activities.AjoutPost" />
         <activity android:name=".Activities.SalleActivity" />
         <activity android:name=".Gallery_multiple_photos.Gallery" />
@@ -47,7 +47,9 @@
         <service
             android:name=".Services.ServiceCommentNotifcation"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".Activities.SearchActivity"></activity>
     </application>
 
 </manifest>

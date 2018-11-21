@@ -4,10 +4,12 @@ public class InfoPostCom {
 
     private String idPoste ;
     private String idCom;
+    private String like;
 
-    public InfoPostCom(String idPoste, String idCom) {
+    public InfoPostCom(String idPoste, String idCom , String like) {
         this.idPoste = idPoste;
         this.idCom = idCom;
+        this.like = like;
     }
 
 
@@ -30,5 +32,13 @@ public class InfoPostCom {
 
     public void setIdCom(String idCom) {
         this.idCom = idCom;
+    }
+
+    public String getLike() {
+        return like;
+    }
+
+    public void setLike(String like) {
+        this.like = like;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.sadokmm.student.Activities;
 
 
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -131,6 +132,14 @@ public class ProfileActivity extends AppCompatActivity {
                     profileFiliere.setText(niveau + " " + filiere.toUpperCase());
                     Drawable d = new BitmapDrawable(getResources(), aq.getCachedImage(imgUrl));
                     collapsingToolbarLayout.setBackground(d);
+                    collapsingToolbarLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getApplicationContext(),FullScreenImage.class);
+                            intent.putExtra("imgurl",imgUrl);
+                            startActivity(intent);
+                        }
+                    });
 
 
                     chargerPost();

@@ -40,6 +40,7 @@ import com.example.sadokmm.student.Adapters.ImgPostRv;
 import com.example.sadokmm.student.FileUtils;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.R;
+import com.example.sadokmm.student.Services.ServiceCommentNotifcation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -345,7 +346,12 @@ public class AjoutPost extends AppCompatActivity {
                             prgDialog.dismiss();
 
                             Toast.makeText(getApplicationContext(), "Okey", Toast.LENGTH_LONG).show();
+
+                            ServiceCommentNotifcation.SERVICE_IS_RUN = false;
+
                             finish();
+
+
 
 
                         }

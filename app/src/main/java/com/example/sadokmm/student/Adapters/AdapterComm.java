@@ -28,6 +28,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.example.sadokmm.student.Activities.MainActivity;
+import com.example.sadokmm.student.Activities.ProfileActivity;
 import com.example.sadokmm.student.Objects.Commentaire;
 import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.Objects.User;
@@ -189,7 +190,7 @@ public class AdapterComm extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
             @Override
             public void onResponse(JSONObject jsonObject) {
 
-                String id , email , nom , prenom , filiere , mdp , imgUrl;
+                final String id , email , nom , prenom , filiere , mdp , imgUrl;
                 int niveau , groupe;
 
 
@@ -204,12 +205,32 @@ public class AdapterComm extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
                     groupe = Integer.parseInt(jsonObject.getString("groupe"));
 
 
-                    User u = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
+                    final User u = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
 
                     viewHolder.comment.setText(commentaire.getTxtComm());
                     viewHolder.date.setText(commentaire.getDateComm());
                     viewHolder.userName.setText(prenom + " " + nom);
                     aq.id(viewHolder.userPhoto).image(imgUrl);
+
+
+
+                    viewHolder.userPhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
+                            intent.putExtra("id",id);
+                            layoutInflater.getContext().startActivity(intent);
+                        }
+                    });
+
+                    viewHolder.userName.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(layoutInflater.getContext(),ProfileActivity.class);
+                            intent.putExtra("id",id);
+                            layoutInflater.getContext().startActivity(intent);
+                        }
+                    });
 
 
                 } catch (JSONException e) {

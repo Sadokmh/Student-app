@@ -49,7 +49,7 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView postRv;
-    private PostAdapter postAdapter;
+    public static PostAdapter postAdapter;
     public static ArrayList<Post> ll;
     ProgressDialog prgDialog;
 
