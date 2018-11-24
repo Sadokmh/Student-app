@@ -64,10 +64,12 @@ import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 public class TimeFragment extends Fragment {
 
 
+    public static Boolean IS_ACTIVE = false;
     public static TextView afficheBtn;
     private RecyclerView actuRv;
     private ActuAdapter actuAdapter ;
     private ArrayList<Actualite> listeAct ;
+    SharedPreferences.Editor editor;
 
     public TimeFragment() {
 
@@ -94,6 +96,8 @@ public class TimeFragment extends Fragment {
 
 
         listeAct = new ArrayList<>();
+       editor=getContext().getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+       IS_ACTIVE = true;
 
         if (isNetworkAvailable()) {
 
@@ -459,7 +463,7 @@ public class TimeFragment extends Fragment {
                     Gson gson = new Gson();
                     String monEmploiEnJson = gson.toJson(monEmploi);
 
-                    SharedPreferences.Editor editor=getContext().getSharedPreferences(EMPLOI_FILE,MODE_PRIVATE).edit();
+
                     editor.putString("emploi",monEmploiEnJson);
                     editor.commit();
 

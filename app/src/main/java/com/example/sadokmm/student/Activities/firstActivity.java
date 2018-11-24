@@ -53,7 +53,7 @@ public class firstActivity extends AppCompatActivity {
 
 
 
-    public final static String publicUrl = "http://192.168.1.2:8080/";
+    public final static String publicUrl = "http://192.168.1.5:8080/";
 
     public static Activity myActivity;
 

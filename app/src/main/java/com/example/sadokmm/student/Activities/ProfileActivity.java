@@ -64,7 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
 
-        profile_name = (TextView) findViewById(R.id.profile_name);
         profileFiliere = (TextView) findViewById(R.id.profileFiliere);
         profileGroupe = (TextView) findViewById(R.id.profileGroupe) ;
         profileEmail = (TextView) findViewById(R.id.profileEmail) ;

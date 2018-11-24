@@ -31,6 +31,7 @@ import com.android.volley.misc.ImageUtils;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidquery.AQuery;
 import com.example.sadokmm.student.Objects.Emploi;
 import com.example.sadokmm.student.Objects.Jour;
 import com.example.sadokmm.student.Objects.Seance;
@@ -79,6 +80,8 @@ public class ParametreActivity extends AppCompatActivity {
     private ProgressDialog prgDialog;
     private Toolbar toolbar;
 
+    private AQuery aq;
+
 
 
     @Override
@@ -99,6 +102,8 @@ public class ParametreActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Paramètres");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        aq = new AQuery(this);
+
         nomP = (EditText) findViewById(R.id.nomP);
         prenomP = (EditText) findViewById(R.id.prenomP);
         emailP = (EditText) findViewById(R.id.emailP);
@@ -117,6 +122,7 @@ public class ParametreActivity extends AppCompatActivity {
         nomP.setText(admin.getNom());
         prenomP.setText(admin.getPrenom());
         emailP.setText(admin.getEmail());
+        aq.id(imageP).image(publicUrl+admin.getImg());
 
         listNiveau = new ArrayList<>();
         listFiliere = new ArrayList<>();

@@ -4,8 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +35,9 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.example.sadokmm.student.Adapters.PageAdapterMain;
 import com.example.sadokmm.student.Fragments.NavigationDrawerFragment;
+import com.example.sadokmm.student.Fragments.PostFragment;
+import com.example.sadokmm.student.Fragments.ProfileFragment;
+import com.example.sadokmm.student.Fragments.TimeFragment;
 import com.example.sadokmm.student.Objects.Emploi;
 import com.example.sadokmm.student.Objects.Info;
 import com.example.sadokmm.student.Objects.Jour;
@@ -43,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
     public static int currentHour ;
     //public static Emploi monEmploi;
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    //private TabLayout tabLayout;
+   // private ViewPager viewPager;
     private PageAdapterMain pageAdapter;
 
     ProgressDialog prgDialog;
@@ -98,6 +106,13 @@ public class MainActivity extends AppCompatActivity {
 
     private AQuery aq ;
 
+    BottomNavigationView mBottomNavigationView;
+    PostFragment homeFragment;
+    public static TimeFragment timeFragment;
+    ProfileFragment profileFragment;
+    public static FragmentManager manager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         aq = new AQuery(this);
         requestQueue = Volley.newRequestQueue(this);
+        manager= getSupportFragmentManager();
         setUpFab();
 
         getStringDate();
@@ -115,16 +131,16 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Student");
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        tabLayout=(TabLayout)findViewById(R.id.tabLayoutMain);
-        viewPager=(ViewPager) findViewById(R.id.viewPagerMain);
+        //tabLayout=(TabLayout)findViewById(R.id.tabLayoutMain);
+        //viewPager=(ViewPager) findViewById(R.id.viewPagerMain);
 
 
-        tabLayout.addTab(tabLayout.newTab().setText(""));
-        tabLayout.addTab(tabLayout.newTab().setText(""));
+        //tabLayout.addTab(tabLayout.newTab().setText(""));
+        //tabLayout.addTab(tabLayout.newTab().setText(""));
 
-        pageAdapter=new PageAdapterMain(getSupportFragmentManager(),tabLayout.getTabCount());
-        viewPager.setAdapter(pageAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+        //pageAdapter=new PageAdapterMain(getSupportFragmentManager(),tabLayout.getTabCount());
+        //viewPager.setAdapter(pageAdapter);
+        //tabLayout.setupWithViewPager(viewPager);
 
         searchView = new SearchView(this);
 
@@ -138,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
         seanceActuelle = seanceVide;
         getJourNum();
         getTime();
+        loadHomeFragment();
+        loadTimeFragment();
+        setupBottomNav();
 
 
 
@@ -568,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent searchIntent = new Intent(getApplicationContext(),SearchActivity.class);
-                if (viewPager.getCurrentItem() == 0) startActivity(searchIntent);
+                 startActivity(searchIntent);
                 return false;
             }
         });
@@ -584,31 +603,81 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-
-                currentFragment = viewPager.getCurrentItem();
-
-
-                if (currentFragment == 1) {
-                    postAdapter.getFilter().filter(s);
-                }
-
-
-
-
-                return false;
-            }
-
-
-            });
         return true;
     }
+
+
+
+
+
+    public void setupBottomNav() {
+        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
+
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        loadHomeFragment();
+                        return true;
+                    case R.id.list:
+                        loadTimeFragment();
+                        return true;
+                    case R.id.profile:
+                        loadProfileFragment();
+                        return true;
+
+                }
+                return false;
+            }
+        });
+    }
+
+
+
+    public void loadHomeFragment() {
+
+
+        if (!homeFragment.IS_ACTIVE){
+            homeFragment = new PostFragment();
+        }
+        //fragment.applyGrid();
+        //fragment.aa();
+        manager.beginTransaction()
+                .replace(R.id.container,homeFragment)
+                .commit();
+        getSupportActionBar().setTitle("Discussion");
+
+    }
+
+
+
+    public void loadTimeFragment() {
+
+        if (!timeFragment.IS_ACTIVE) {
+            timeFragment = new TimeFragment();
+        }
+        //fragment.applyGrid();
+        //fragment.aa();
+        manager.beginTransaction()
+                .replace(R.id.container,timeFragment)
+                .commit();
+        getSupportActionBar().setTitle("Horaires et actualités");
+    }
+
+    public void loadProfileFragment() {
+
+        if (!profileFragment.IS_ACTIVE) {
+            profileFragment = new ProfileFragment();
+        }
+        //fragment.applyGrid();
+        //fragment.aa();
+        manager.beginTransaction()
+                .replace(R.id.container,profileFragment)
+                .commit();
+        getSupportActionBar().setTitle(admin.getPrenom() + " " + admin.getNom());
+    }
+
+
 }

@@ -17,7 +17,10 @@ import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.sadokmm.student.Adapters.PostAdapter;
+import com.example.sadokmm.student.Adapters.SearchPostAdapter;
 import com.example.sadokmm.student.Adapters.SearchProfileAdapter;
+import com.example.sadokmm.student.Objects.Post;
 import com.example.sadokmm.student.Objects.User;
 import com.example.sadokmm.student.R;
 
@@ -34,13 +37,19 @@ import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 public class SearchActivity extends AppCompatActivity {
 
 
+    private RecyclerView rvPost;
+    private SearchPostAdapter postAdapter;
+
     private RecyclerView rvProfile ;
     private SearchProfileAdapter searchProfileAdapter;
     private Toolbar toolbar;
     private SearchView searchView ;
 
     private String url = publicUrl + "student/searchuser/";
+    private String urlPost = publicUrl + "student/searchpost/";
+
     private RequestQueue requestQueue;
+    private RequestQueue requestQueuePost;
 
     private List<User> myList;
 
@@ -60,6 +69,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         requestQueue = Volley.newRequestQueue(this);
+        requestQueuePost = Volley.newRequestQueue(this);
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Rechercher...");
@@ -67,6 +77,10 @@ public class SearchActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         myList = new ArrayList<>();
 
+        rvPost = (RecyclerView) findViewById(R.id.postSearchRv);
+        postAdapter = new SearchPostAdapter(this);
+        rvPost.setLayoutManager(new LinearLayoutManager(this));
+        rvPost.setAdapter(postAdapter);
         rvProfile = (RecyclerView) findViewById(R.id.profileSearchRv);
         searchProfileAdapter = new SearchProfileAdapter(this);
         rvProfile.setLayoutManager(new LinearLayoutManager(this));
@@ -133,6 +147,68 @@ public class SearchActivity extends AppCompatActivity {
 
 
 
+
+
+    public void searchPost(String s) {
+
+        String myUrl = urlPost + s;
+        postAdapter.getListPost().clear();
+        postAdapter.notifyDataSetChanged();
+
+
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, myUrl, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                try {
+
+
+
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject postJson = response.getJSONObject(i);
+                        String id , txtpost, datepost, idusr;
+                        id = postJson.getString("_id");
+                        txtpost = postJson.getString("txtpost");
+                        datepost = postJson.getString("datepost");
+                        idusr = postJson.getString("idusr");
+                        JSONArray imgpost = postJson.getJSONArray("imgpost");
+                        ArrayList<String> imgListPost = new ArrayList<>();
+                        for (int j=0 ; j<imgpost.length() ; j++) {
+                            imgListPost.add(imgpost.getString(j));
+                        }
+
+                        Post p = new Post(txtpost, idusr, imgListPost , id );
+                        p.setDatepost(datepost);
+
+                        postAdapter.getListPost().add(p);
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+
+                }
+                catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+            }
+        });
+
+        requestQueuePost.getCache().clear();
+        requestQueuePost.add(jsonArrayRequest);
+
+
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
@@ -145,6 +221,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 searchProfile(s);
+                searchPost(s);
                 return true;
             }
 
@@ -158,6 +235,7 @@ public class SearchActivity extends AppCompatActivity {
                     //searchProfileAdapter.getListUser().clear();
                     searchProfile(s);*/
                    searchProfile(s);
+                   searchPost(s);
 
 
 

@@ -19,6 +19,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.sadokmm.student.Activities.firstActivity.admin;
+import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 
 public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -60,7 +61,7 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             username.setText(admin.getNom() +" "+ admin.getPrenom());
             email.setText(admin.getEmail());
-            aq.id(imageProfile).image(admin.getImg());
+            aq.id(imageProfile).image(publicUrl+admin.getImg());
 
 
             HeaderHolder holder = new HeaderHolder(view);

@@ -93,6 +93,7 @@ public class NavigationDrawerFragment extends Fragment  {
                 switch (position) {
 
                     case 1 : {
+
                         break;
                     }
                     case 2 : {

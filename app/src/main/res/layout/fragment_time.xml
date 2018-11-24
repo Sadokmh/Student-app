@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="60dp">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -64,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="Pas de cours pour l'instant"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimary"
                 android:textSize="35dp" />

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -47,12 +48,13 @@ import static com.example.sadokmm.student.Activities.firstActivity.publicUrl;
 
 public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
+    public static Boolean IS_ACTIVE = false ;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView postRv;
     public static PostAdapter postAdapter;
     public static ArrayList<Post> ll;
     ProgressDialog prgDialog;
-
+    ProgressBar progressBarPost;
     ServiceCommentNotifcation mServicee;
 
     private RequestQueue requestQueuePost;
@@ -77,11 +79,15 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         postRv = (RecyclerView) view.findViewById(R.id.postRV);
         postAdapter = new PostAdapter(getActivity());
         requestQueuePost = Volley.newRequestQueue(getActivity());
+        progressBarPost = (ProgressBar)view.findViewById(R.id.progressBarPost);
+        IS_ACTIVE=true;
 
         ll = new ArrayList<>();
         postAdapter.setMyList(ll);
-        charger(0, 0);
-
+        if (isNetworkAvailable())
+            charger(0, 0);
+        else
+            Toast.makeText(getActivity(),"Pas de connexion internet",Toast.LENGTH_LONG).show();
         //postAdapter.setMyList(ll);
         postRv.setLayoutManager(new LinearLayoutManager(getActivity()));
         postRv.setAdapter(postAdapter);
@@ -132,8 +138,11 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
 
                             }
+                            if(postAdapter.getMyListPost().size()!=0) postAdapter.getMyListPost().clear();
                             postAdapter.setMyList(ll);
                             postAdapter.notifyDataSetChanged();
+                            progressBarPost.setVisibility(View.INVISIBLE);
+
                             //Toast.makeText(getContext(),,Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
@@ -147,14 +156,14 @@ public class PostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                /*Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();*/
             }
         });
 
-        if (isNetworkAvailable())
-            requestQueuePost.getCache().clear();
+        /*if (isNetworkAvailable())
+            requestQueuePost.getCache().clear();*/
 
         requestQueuePost.add(jsonArrayRequest);
 

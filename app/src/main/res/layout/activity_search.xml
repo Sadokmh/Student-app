@@ -23,12 +23,52 @@
             android:orientation="vertical">
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personnes: "
+                android:textColor="@color/primaryText"
+                android:textSize="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                />
 
             <android.support.v7.widget.RecyclerView
+                android:layout_margin="20dp"
                 android:id="@+id/profileSearchRv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"/>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorLightPlus"
+                android:layout_margin="20dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Publications: "
+                android:textColor="@color/primaryText"
+                android:textSize="20dp"
+                android:layout_marginLeft="10dp"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/postSearchRv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorLightPlus"
+                android:layout_margin="20dp"
+                />
 
 
         </LinearLayout>

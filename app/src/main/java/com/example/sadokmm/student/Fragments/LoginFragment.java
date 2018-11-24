@@ -150,79 +150,6 @@ public class LoginFragment extends Fragment {
     }
 
 
-    /*public void chercherUserByEmail(final String email , final String mdp) {
-
-         dialog = new Dialog(getContext());
-        dialog.setTitle("Connexion en cours");
-        dialog.setCancelable(true);
-        dialog.show();
-
-
-
-        String url= publicUrl + "student/login/"+email+"/"+mdp;
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-
-                try {
-
-
-                    id = "ee";
-                    nom = jsonObject.getString("nom");
-                    prenom = jsonObject.getString("prenom");
-                    filiere = jsonObject.getString("filiere");
-                    imgUrl = publicUrl + jsonObject.getString("img");
-                    niveau = Integer.parseInt(jsonObject.getString("niveau"));
-                    groupe = Integer.parseInt(jsonObject.getString("groupe"));
-
-                    //créer l'admin et ouvrir l'application
-                    admin = new User(id, nom, prenom, email, imgUrl, filiere, groupe, niveau);
-
-
-                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(SESSION, MODE_PRIVATE).edit();
-                    editor.putBoolean("statut", true);
-                    editor.putString("email", admin.getEmail());
-                    editor.putString("prenom", admin.getPrenom());
-                    editor.putString("nom", admin.getNom());
-                    editor.putString("filiere", admin.getFiliere());
-                    editor.putString("img", admin.getImg());
-                    editor.putInt("groupe", admin.getGroupe());
-                    editor.putInt("niveau", admin.getNiveau());
-                    editor.commit();
-
-                    chargerMonEmploi();
-
-                    dialog.dismiss();
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra("type","login");
-                    emailText.getText().clear();
-                    pass.getText().clear();
-
-                    startActivity(intent);
-                }
-                catch (JSONException e) {
-                    Toast.makeText(getContext(),e.toString(),Toast.LENGTH_LONG).show();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
-
-
-            }
-        });
-
-        requestQueue.add(jsonObjectRequest);
-
-
-        //aq.ajax(url, JSONObject.class,this,"emailCallback");
-
-    }*/
 
 
 
@@ -257,7 +184,7 @@ public class LoginFragment extends Fragment {
                     nom=jsonObject.getString("nom");
                     prenom=jsonObject.getString("prenom");
                     filiere=jsonObject.getString("filiere");
-                    imgUrl=publicUrl+jsonObject.getString("img");
+                    imgUrl=jsonObject.getString("img");
 
 
                     niveau = Integer.parseInt(jsonObject.getString("niveau"));
